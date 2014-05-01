@@ -6,6 +6,8 @@
  *
  */
 
+#import "game.c"
+
 #define NUM_UNIS 3
 
 // Player ID of each university
@@ -53,13 +55,14 @@
 #define TRUE 1
 #define FALSE 0
 
+
 typedef struct _game * Game;
 
 // 1. Is there a campus on this vertex?
 int getCampus(Game g, path pathToVertex);
 
 // 2. Is there an upgraded campus on this vertex?
-int getCampus(Game g, path pathToVertex);
+int getGO8s(Game g, path pathToVertex);
 
 // 3. Whose turn is it?
 int getWhoseTurn (Game g);
@@ -115,3 +118,19 @@ int getGO8s (Game g, int player);
 // 4. Can we upgrade this vertex to a G08?
 // 5. Does the player have the 4 required students to pay for that campus?
 int isLegalAction (Game g, action a);
+
+int main(int argc, char * argv[]) {
+    assert (getCampus(g, 0) == TRUE);
+    assert (getCampus(g, RD0) == TRUE);
+    assert (getCampus(g, R0) == FALSE);
+    assert (getCampus(g, RDDLDD0) == TRUE);
+    assert (getCampus(g, DD0) == TRUE);
+    
+    assert (getGO8s (g, 0) == TRUE);
+    assert (getGO8s (g, RD0) == FALSE);
+    assert (getGO8s (g, RDDLDD0) == TRUE);
+    assert (getGO8s (g, DDDDDD0) == TRUE);
+    assert (getGO8s (g, RRRRDDRRDD0) == TRUE);
+    
+    printf("All tests passed, you are Awesome!");
+}
