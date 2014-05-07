@@ -1,6 +1,10 @@
+
+// Samuel Thompson, Nicholas Pizzino, George Kottler
+// Draft Game.c
+
 #include <stdlib.h>
 
-#include "game.h"
+#include "Game.h"
 
 #define NUM_VERTICES 54
 #define NUM_ARCS 72
@@ -12,20 +16,22 @@
 
 #define NUM_STUDENT_TYPES 6
 
-//Stores the neighbours of a region - not all parts may be necessary
+// ---------------------------------------------------- Storage --------------------------------------------------------- //
+
+// Stores the neighbours of a region - not all parts may be necessary
 typedef struct _region {
     int region[NEIGHBOURS_PER_REGION];
     int arcs[NEIGHBOURS_PER_REGION];
     int vertices[NEIGHBOURS_PER_REGION];
 } region;
 
-//Stores the neighbours of an arc - not all parts may be necessary
+// Stores the neighbours of an arc - not all parts may be necessary
 typedef struct _arc {
     int vertices[VERTICES_PER_ARC];
     int regions[REGIONS_PER_ARC];
 } arc;
 
-//Stores the neighbours of a vertex - not all parts may be necessary
+// Stores the neighbours of a vertex - not all parts may be necessary
 typedef struct _vertex {
     int left_arc, right_arc, down_arc;
     int left_vertex, right_vertex, down_vertex;
@@ -33,11 +39,11 @@ typedef struct _vertex {
 } vertex;
 
 typedef struct _game {
-    //Game states
+    // Game states
     int turn;
     
-    //Player attributes
-    int num_students[NUM_UNIS][NUM_STUDENT_TYPES];  //This is a 2-D array
+    // Player attributes
+    int num_students[NUM_UNIS][NUM_STUDENT_TYPES];  // This the decleration of a 2-D array
     int num_kpi_points[NUM_UNIS];
     int num_campuses[NUM_UNIS];
     int num_go8s[NUM_UNIS];
@@ -45,31 +51,32 @@ typedef struct _game {
     int num_ips[NUM_UNIS];
     int num_publications[NUM_UNIS];
     
-    //Contents
+    // Contents
     int region_discipline[NUM_REGIONS];
     int region_dice[NUM_REGIONS];
     int vertex_contents[NUM_VERTICES];
     int arc_contents[NUM_ARCS];
     
-    //Neighbours
-    region region_neighbours[NUM_REGIONS];  //What are the neighbours of each region?
-    arc arc_neighbours[NUM_ARCS];                                           // arc?
-    vertex vertex_neighbours[NUM_VERTICES];                                 // vertex?
+    // Neighbours
+    region region_neighbours[NUM_REGIONS];  // What are the neighbours of each region?
+    arc arc_neighbours[NUM_ARCS];                                           // Arc?
+    vertex vertex_neighbours[NUM_VERTICES];                                 // Vertex?
 } game;
 
 
-//Setters
+// ---------------------------------------------------- Setters --------------------------------------------------------- //
+
 Game newGame (int discipline[], int dice[]) {
-    //Declare variables
+    // Declare variables
     int i, j;
     
-    //Allocate game
+    // Allocate game
     Game g = malloc(sizeof(game));
     
-    //Initialise variables
+    // Initialise variables
     g->turn = -1;
     
-    //Initialise the contents of each region/arc/vertex
+    // Initialise the contents of each region/arc/vertex
     i = 0;
     while (i < NUM_REGIONS) {
         g->region_discipline[i] = discipline[i];
@@ -87,7 +94,7 @@ Game newGame (int discipline[], int dice[]) {
         i++;
     }
     
-    //Intitialise number of students to 0 for each player and discipline
+    // Intitialise number of students to 0 for each player and discipline
     i = 0;
     while (i < NUM_UNIS) {
         j = 0;
@@ -98,7 +105,7 @@ Game newGame (int discipline[], int dice[]) {
         i++;
     }
     
-    //Do things
+    // Do Things - to be implimented in later updates
     
     return g;
 }
@@ -106,7 +113,7 @@ Game newGame (int discipline[], int dice[]) {
 
 void disposeGame (Game g) {
     free(g);
-    //Do more things?
+    // Should there be more things to do?
 }
 
 void throwDice (Game g, int diceScore) {
@@ -114,14 +121,15 @@ void throwDice (Game g, int diceScore) {
     
     i = 0;
     while (i < NUM_REGIONS) {
-        //If this region's number has been rolled
+        
+        // Check if this region's number has been rolled
         if (g->region_dice[i] == diceScore) {
             j = 0;
             while (j < NEIGHBOURS_PER_REGION) {
-                //If this vertex contains a campus
+                // If this vertex contains a campus...
                 int v_contents = g->vertex_contents[g->region_neighbours[i].vertices[j]];
                 if (v_contents != VACANT_VERTEX) {
-                    //Increase the number of students at that university
+                    // Increase the number of students at that university
                     g->num_students[(v_contents % NUM_UNIS) - 1][i]++;
                 }
                 ++j;
@@ -131,7 +139,8 @@ void throwDice (Game g, int diceScore) {
     }
 }
 
-//Getters
+// ---------------------------------------------------- Getters --------------------------------------------------------- //
+
 int getDiscipline (Game g, int regionID) {
     return g->region_discipline[regionID];
 }
@@ -180,6 +189,5 @@ int getPublications (Game g, int player) {
 }
 
 int getStudents (Game g, int player, int discipline) {
-    return g->num_students[player][discipline]; //This is how you get an element in a 2-D array
+    return g->num_students[player][discipline]; // This is the syntax on how you get an element in a 2-D array
 }
-
