@@ -1,3 +1,5 @@
+//CHECK OFF-BY-ONE ERRORS!
+
 #include <stdlib.h>
 
 #include "game.h"
@@ -11,6 +13,13 @@
 #define REGIONS_PER_ARC 2
 
 #define NUM_STUDENT_TYPES 6
+
+#define INITIAL_THD 0
+#define INITIAL_BPS 3
+#define INITIAL_BQN 3
+#define INITIAL_MJ  1
+#define INITIAL_MTV 1
+#define INITIAL_MMONEY 1
 
 //Stores the neighbours of a region - not all parts may be necessary
 typedef struct _region {
@@ -69,7 +78,7 @@ int getEdge (path pathToEdge) {
 //Setters
 Game newGame (int discipline[], int dice[]) {
     //Declare variables
-    int i, j;
+    int i;
     
     //Allocate game
     Game g = malloc(sizeof(game));
@@ -100,11 +109,12 @@ Game newGame (int discipline[], int dice[]) {
     //Intitialise number of students to 0 for each player and discipline
     i = 0;
     while (i < NUM_UNIS) {
-        j = 0;
-        while (i < NUM_STUDENT_TYPES) {
-            g->num_students[i][j] = 0;
-            j++;
-        }
+        g->num_students[i][STUDENT_THD] = INITIAL_THD;
+        g->num_students[i][STUDENT_BPS] = INITIAL_BPS;
+        g->num_students[i][STUDENT_BQN] = INITIAL_BQN;
+        g->num_students[i][STUDENT_MJ] = INITIAL_MJ;
+        g->num_students[i][STUDENT_MTV] = INITIAL_MTV;
+        g->num_students[i][STUDENT_MMONEY] = INITIAL_MMONEY;
         i++;
     }
     
@@ -119,9 +129,34 @@ void disposeGame (Game g) {
     //Do more things?
 }
 
+void makeAction(Game g, action a) {
+    int turn = getWhoseTurn(g);
+    if (a.actionCode == BUILD_CAMPUS) {
+        g->vertex_contents[getVertex(a.destination)] = turn;
+        g->num_students[turn][STUDENT_BPS]--;
+        g->num_students[turn][STUDENT_BQN]--;
+        g->num_students[turn][STUDENT_MJ]--;
+        g->num_students[turn][STUDENT_MTV]--;
+    } else if (a.actionCode == BUILD_GO8) {
+        g->vertex_contents[getVertex(a.destination)] += NUM_UNIS;
+        g->num_students[turn][STUDENT_MJ] -= 2;
+        g->num_students[turn][STUDENT_MMONEY] -= 3;
+    } else if (a.actionCode == OBTAIN_ARC) {
+        g->arc_contents[getEdge(a.destination)] = getWhoseTurn(g);
+        g->num_students[turn][STUDENT_BPS]--;
+        g->num_students[turn][STUDENT_BQN]--;
+    } else if (a.actionCode == START_SPINOFF) {
+        ;   //Generate publication / IP
+        g->num_students[turn][STUDENT_MJ]--;
+        g->num_students[turn][STUDENT_MTV]--;
+        g->num_students[turn][STUDENT_MMONEY]--;
+    }
+}
+
 void throwDice (Game g, int diceScore) {
     int i, j;
     
+    //Increase students
     i = 0;
     while (i < NUM_REGIONS) {
         //If this region's number has been rolled
@@ -134,10 +169,21 @@ void throwDice (Game g, int diceScore) {
                     //Increase the number of students at that university
                     g->num_students[(v_contents % NUM_UNIS) - 1][i]++;
                 }
-                ++j;
+                j++;
             }
         }
-        ++i;
+        i++;
+    }
+    
+    //Change students
+    if (diceScore == 7) {
+        i = 1;
+        while (i <= NUM_UNIS) {
+            g->num_students[i][STUDENT_THD] += g->num_students[i][STUDENT_MTV] + g->num_students[i][STUDENT_BQN];
+            g->num_students[i][STUDENT_BQN] = 0;
+            g->num_students[i][STUDENT_MTV] = 0;
+            i++;
+        }
     }
 }
 
@@ -204,3 +250,4 @@ int getPublications (Game g, int player) {
 int getStudents (Game g, int player, int discipline) {
     return g->num_students[player - 1][discipline]; //This is how you get an element in a 2-D array
 }
+
