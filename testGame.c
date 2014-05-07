@@ -3,66 +3,20 @@
  *
  *  Created by Nicholas Pizzino on 30/04/14.
  *  Update 1.0 (Missing Decleration Of Variables/Data)
+ *  Update 1.1 (Included Basic Tests)
  *
  */
 
-#import "game.c"
+#import "Game.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
 
-#define NUM_UNIS 3
-
-// Player ID of each university
-#define NO_ONE 0
-#define UNI_A 1
-#define UNI_B 2
-#define UNI_C 3
-
-// Contents of an ARC
-#define VACANT_ARC 0
-#define ARC_A 1
-#define ARC_B 2
-#define ARC_C 3
-
-// Contents of a VERTEX
-#define VACANT_VERTEX 0  
-#define CAMPUS_A 1
-#define CAMPUS_B 2
-#define CAMPUS_C 3
-#define GO8_A 4
-#define GO8_B 5
-#define GO8_C 6
-
-// Action Codes
-#define PASS 0
-#define BUILD_CAMPUS 1
-#define BUILD_GO8 2
-#define OBTAIN_ARC 3
-#define START_SPINOFF 4
-#define OBTAIN_PUBLICATION 5
-#define OBTAIN_IP_PATENT 6
-#define RETRAIN_STUDENTS 7
-
-// Disciplines
-#define STUDENT_THD 0
-#define STUDENT_BPS 1
-#define STUDENT_BQN 2
-#define STUDENT_MJ  3
-#define STUDENT_MTV 4
-#define STUDENT_MMONEY 5
-
-#define NUM_REGIONS 19
-#define PATH_LIMIT 150
-
-#define TRUE 1
-#define FALSE 0
-
-
-typedef struct _game * Game;
-
-// 1. Is there a campus on this vertex?
-int getCampus(Game g, path pathToVertex);
+void testBasics();
+void testLegalMoves();
 
 // 2. Is there an upgraded campus on this vertex?
-int getGO8s(Game g, path pathToVertex);
+int getCampus(Game g, path pathToVertex);
 
 // 3. Whose turn is it?
 int getWhoseTurn (Game g);
@@ -120,17 +74,26 @@ int getGO8s (Game g, int player);
 int isLegalAction (Game g, action a);
 
 int main(int argc, char * argv[]) {
-    assert (getCampus(g, 0) == TRUE);
-    assert (getCampus(g, RD0) == TRUE);
-    assert (getCampus(g, R0) == FALSE);
-    assert (getCampus(g, RDDLDD0) == TRUE);
-    assert (getCampus(g, DD0) == TRUE);
+    testBasics();
+    printf("You have passed the Basics!");
+    testLegalMoves();
+    printf("You have passed the Legal Move Testing!");
+    printf("All Tests Passed, You Are Awesome!");
+}
+
+void testBasics() {
     
-    assert (getGO8s (g, 0) == TRUE);
-    assert (getGO8s (g, RD0) == FALSE);
-    assert (getGO8s (g, RDDLDD0) == TRUE);
-    assert (getGO8s (g, DDDDDD0) == TRUE);
-    assert (getGO8s (g, RRRRDDRRDD0) == TRUE);
+    int discipline[] = {STUDENT_BQN, STUDENT_MMONEY, STUDENT_MJ, STUDENT_MMONEY, STUDENT_MJ, STUDENT_BPS, STUDENT_MTV,STUDENT_MTV, STUDENT_BPS,STUDENT_MTV, STUDENT_BQN, STUDENT_MJ, STUDENT_BQN, STUDENT_THD, STUDENT_MJ, STUDENT_MMONEY, STUDENT_MTV, STUDENT_BQN, STUDENT_BPS};
+    int dice[] = {9,10,8,12,6,5,3,11,3,11,4,6,4,7,9,2,8,10,5};
     
-    printf("All tests passed, you are Awesome!");
+    Game g = newGame (discipline, dice);
+    
+    char *path = "RB";
+    
+    // 1. Is there a campus on this vertex?
+    assert (getCampus(g, path) == TRUE);
+    assert (getCampus(g, path) == TRUE);
+    assert (getCampus(g, path) == TRUE);
+    assert (getCampus(g, path) == TRUE);
+    assert (getCampus(g, path) == TRUE);
 }
