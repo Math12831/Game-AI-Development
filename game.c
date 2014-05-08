@@ -72,7 +72,7 @@ int getVertex (Game g, path pathToVertex) {
     char* i = pathToVertex;
     int current_vertex = 0;
     while (*i != 0) {
-        vertex* neighbours = g->vertex_neighbours[current_vertex]
+        vertex* neighbours = &g->vertex_neighbours[current_vertex]
         if (*i == 'L') {
             current_vertex = neighbours->left_vertex;
         } else if (*i == 'R') {
@@ -84,9 +84,28 @@ int getVertex (Game g, path pathToVertex) {
     }
     return current_vertex;
 }
-int getEdge (path pathToEdge) {
-    return 0;   //Implement this later
+
+int getEdge (Game g, path pathToEdge) {
+    char* i = pathToVertex;
+    int current_vertex = 0;
+    int current_edge;
+    while (*i != 0) {
+        vertex* neighbours = &g->vertex_neighbours[current_vertex]
+        if (*i == 'L') {
+            current_vertex = neighbours->left_vertex;
+            current_edge = neighbours->left_edge;
+        } else if (*i == 'R') {
+            current_vertex = neighbours->right_vertex;
+            current_edge = neighbours->right_edge;
+        } else {
+            current_vertex = neighbours->back_vertex;
+             current_edge = neighbours->back_edge;
+        }
+        i++;
+    }
+    return current_edge;
 }
+
 
 //Setters
 Game newGame (int discipline[], int dice[]) {
