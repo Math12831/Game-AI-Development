@@ -67,10 +67,23 @@ typedef struct _game {
 } game;
 
 //Helper functions
-int getVertex (path pathToVertex) {
-    return 0;   //Implement this later
+//I am not sure whether I have these correct
+int getVertex (Game g, path pathToVertex) {
+    char* i = pathToVertex;
+    int current_vertex = 0;
+    while (*i != 0) {
+        vertex* neighbours = g->vertex_neighbours[current_vertex]
+        if (*i == 'L') {
+            current_vertex = neighbours->left_vertex;
+        } else if (*i == 'R') {
+            current_vertex = neighbours->right_vertex;
+        } else {
+            current_vertex = neighbours->back_vertex;
+        }
+        i++;
+    }
+    return current_vertex;
 }
-
 int getEdge (path pathToEdge) {
     return 0;   //Implement this later
 }
