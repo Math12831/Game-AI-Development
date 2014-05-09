@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-#include "game.h"
+#include "Game.h"
 
 #define NUM_VERTICES 54
 #define NUM_ARCS 72
