@@ -15,6 +15,7 @@
 
 // Game.c
 // *Already A File On This Repository*
+// Samuel Thompson will work on finishing this
 
 
 // runGame() Function
