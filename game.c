@@ -257,32 +257,76 @@ int getCampus(Game g, path pathToVertex) {
     return g->vertex_contents[getVertex(pathToVertex)];
 }
 
+// Protect against being called with NO_ONE
+
 int getKPIpoints (Game g, int player) {
-    return g->num_kpi_points[player - 1];
+    int val;
+    if (player == NO_ONE) {
+        val = 0;
+    } else {
+        val = g->num_kpi_points[player - 1];
+    }
+    return val;
 }
 
 int getARCs (Game g, int player) {
-    return g->num_arcs[player - 1];
+    int val;
+    if (player == NO_ONE) {
+        val = 0;
+    } else {
+        val = g->num_arcs[player - 1];
+    }
+    return val;
 }
 
 
 int getGO8s (Game g, int player) {
-    return g->num_go8s[player - 1];
+    int val;
+    if (player == NO_ONE) {
+        val = 0;
+    } else {
+        val = g->num_go8s[player - 1];
+    }
+    return val;
 }
 
 int getCampuses (Game g, int player) {
-    return g->num_campuses[player - 1];
+    int val;
+    if (player == NO_ONE) {
+        val = 0;
+    } else {
+        val = g->num_campuses[player - 1];
+    }
+    return val;
 }
 
 int getIPs (Game g, int player) {
-    return g->num_ips[player - 1];
+    int val;
+    if (player == NO_ONE) {
+        val = 0;
+    } else {
+        val = g->num_ips[player - 1];
+    }
+    return val;
 }
 
 int getPublications (Game g, int player) {
-    return g->num_publications[player - 1];
+    int val;
+    if (player == NO_ONE) {
+        val = 0;
+    } else {
+        val = g->num_publications[player - 1];
+    }
+    return val;
 }
 
 int getStudents (Game g, int player, int discipline) {
-    return g->num_students[player - 1][discipline]; //This is how you get an element in a 2-D array
+    int val;
+    if (player == NO_ONE) {
+        val = 0;
+    } else {
+        val = g->num_students[player - 1][discipline]; //This is how you get an element in a 2-D array
+    }
+    return val;
 }
 
