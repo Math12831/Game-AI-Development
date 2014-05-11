@@ -69,16 +69,32 @@ typedef struct _game {
 //Helper functions
 //I am not sure whether I have these correct
 int getVertex (Game g, path pathToVertex) {
+int placeNum(int row, int col, int height[], int width) {
+    int output;
+    if (col < 0 || col >= width || row > 0 || row >= height[col]) {
+        output = -1;
+    } else {
+        output = row;
+        int i = 0;
+        while (i < col) {
+            output += height[i];
+            i++;
+        }
+    }
+    return output;
+}
+
+int getVertex (Game g, path pathToVertex) {
     char* i = pathToVertex;
     int current_vertex = 0;
     while (*i != 0) {
-        vertex* neighbours = &g->vertex_neighbours[current_vertex]
+        vertex* neighbours = &g->vertex_neighbours[current_vertex];
         if (*i == 'L') {
             current_vertex = neighbours->left_vertex;
         } else if (*i == 'R') {
             current_vertex = neighbours->right_vertex;
         } else {
-            current_vertex = neighbours->back_vertex;
+            current_vertex = neighbours->down_vertex;
         }
         i++;
     }
@@ -86,24 +102,51 @@ int getVertex (Game g, path pathToVertex) {
 }
 
 int getEdge (Game g, path pathToEdge) {
-    char* i = pathToVertex;
+    char* i = pathToEdge;
     int current_vertex = 0;
     int current_edge;
     while (*i != 0) {
-        vertex* neighbours = &g->vertex_neighbours[current_vertex]
+        vertex* neighbours = &g->vertex_neighbours[current_vertex];
         if (*i == 'L') {
             current_vertex = neighbours->left_vertex;
-            current_edge = neighbours->left_edge;
+            current_edge = neighbours->left_arc;
         } else if (*i == 'R') {
             current_vertex = neighbours->right_vertex;
-            current_edge = neighbours->right_edge;
+            current_edge = neighbours->right_arc;
         } else {
-            current_vertex = neighbours->back_vertex;
-             current_edge = neighbours->back_edge;
+            current_vertex = neighbours->down_vertex;
+            current_edge = neighbours->down_arc;
         }
         i++;
     }
     return current_edge;
+}
+
+void initaliseNeighbours(Game g) {
+    int i, j, k;
+    int regionColHeight[] = {3, 4, 5, 4, 3};
+    int vertexColHeight[] = {7, 9, 11, 11, 9, 8};
+    
+    //Neighbours of regions
+    
+    //Regions
+    
+    //Arcs
+    
+    //Vertices
+    i = 0;
+    while (i < REGION_COLUMNS) {
+        j = 0;
+        while (j < regionColHeight[i]) {
+            k = 0;
+            while (k < NEIGHBOURS_PER_REGION) {
+                g->region_neighbours[i].vertices[k] = placeNum(i * 2 + k % 3, j + k / 3, vertexColHeight, REGION_COLUMNS);
+                k++;
+            }
+            j++;
+        }
+        i++;
+    }
 }
 
 
@@ -149,6 +192,8 @@ Game newGame (int discipline[], int dice[]) {
         g->num_students[i][STUDENT_MMONEY] = INITIAL_MMONEY;
         i++;
     }
+    
+    initialiseNeighbours(g);
     
     //Do things
     
