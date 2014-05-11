@@ -188,6 +188,9 @@ void makeAction(Game g, action a) {
 void throwDice (Game g, int diceScore) {
     int i, j;
     
+    // Advance game by turn
+    g->turn++;
+    
     //Increase students
     i = 0;
     while (i < NUM_REGIONS) {
