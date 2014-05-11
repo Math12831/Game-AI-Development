@@ -7,17 +7,22 @@
 
 #define WIN_KPI 150
 
+#define FROM 0
+#define TO 1
+
 int main (int argc, char *argv[]);
 
 void getArray(int array[], int num);
 int rollDice();
 action getMove();
 void printGame(Game g);
+int getDiscipline(int direction);
 
 int main (int argc, char *argv[]) {
   int discipline[NUM_REGIONS];
   int dice[NUM_REGIONS];
   
+  // Get the layout of the game board from the user
   printf("Enter the discipline codes of the regions: ");
   getArray(discipline, NUM_REGIONS);
   printf("Enter the dice values of the regions: ");
@@ -26,6 +31,7 @@ int main (int argc, char *argv[]) {
   Game g = newGame(discipline, dice);
   int currentPlayer = NO_ONE;
   int diceValue;
+
   while (getKPIpoints(g, currentPlayer) < WIN_KPI) {
     diceValue = rollDice();
     throwDice(g, diceValue);
@@ -64,6 +70,7 @@ void getArray(int array[], int num) {
   return;
 }
 
+// Accepts command-line input of a dice roll
 int rollDice() {
   int random;
   printf("Enter the dice roll: ");
@@ -71,15 +78,19 @@ int rollDice() {
   return random;
 }
 
+// Converts string input by the user of an action code
+// in string form into the equivalent integer value
+// used by the rest of the code.
 action getMove() {
   action move;
   char currentMove[24];
   
   int valid = FALSE;
-  while (valid != TRUE) {
+  while (valid != TRUE) { // Until the user enters a valid code, we try again
     printf("Enter the action code to perform: ");
     scanf("%s", currentMove);
     
+    // If the entered move is recognised
     if (strcmp(currentMove, "PASS") == 0) {
       move.actionCode = PASS;
       valid = TRUE;
@@ -108,10 +119,8 @@ action getMove() {
       
     } else if (strcmp(currentMove, "RETRAIN_STUDENTS") == 0) {
       move.actionCode = RETRAIN_STUDENTS;
-      printf("Enter the discipline number to convert from: ");
-      scanf("%d", &(move.disciplineFrom));
-      printf("Enter the discipline number to convert from: ");
-      scanf("%d", &(move.disciplineTo));
+      move.disciplineFrom = getDiscipline(FROM);
+      move.disciplineTo = getDiscipline(TO);
       valid = TRUE;
       
     } else {
@@ -124,6 +133,7 @@ action getMove() {
   return move;
 }
 
+// Gives user a snapshot of the game status for the current player
 void printGame(Game g) {
   int currentPlayer = getWhoseTurn(g);
   printf("It is the turn of player %d\n", currentPlayer);
@@ -139,4 +149,52 @@ void printGame(Game g) {
           getStudents(g, currentPlayer, STUDENT_MTV), getStudents(g, currentPlayer, STUDENT_MMONEY));
   
   return;
+}
+
+// Converts a user input discipline name into
+// the corresponding defined value.
+int getDiscipline(int direction) {
+  char currentDiscipline[24];
+  int discipline;
+  
+  int valid = FALSE;
+  while (valid != TRUE) {
+    // Alters message depending on usage.
+    if (direction == FROM) {
+      printf("Enter the discipline to convert from: ");
+    } else if (direction == TO) {
+      printf("Enter the discipline to convert to: ");
+    }
+    scanf("%s", currentDiscipline);
+    
+    if (strcmp(currentDiscipline, "STUDENT_THD") == 0) {
+      discipline = STUDENT_THD;
+      valid = TRUE;
+      
+    } else if (strcmp(currentDiscipline, "STUDENT_BPS") == 0) {
+      discipline = STUDENT_BPS;
+      valid = TRUE;
+      
+    } else if (strcmp(currentDiscipline, "STUDENT_BQN") == 0) {
+      discipline = STUDENT_BQN;
+      valid = TRUE;
+      
+    } else if (strcmp(currentDiscipline, "STUDENT_MJ") == 0) {
+      discipline = STUDENT_MJ;
+      valid = TRUE;
+      
+    } else if (strcmp(currentDiscipline, "STUDENT_MTV") == 0) {
+      discipline = STUDENT_MTV;
+      valid = TRUE;
+      
+    } else if (strcmp(currentDiscipline, "STUDENT_MMONEY") == 0) {
+      discipline = STUDENT_MMONEY;
+      valid = TRUE;
+      
+    } else {
+      printf("Action not valid!\n");
+      
+    }
+    
+  return discipline;
 }
