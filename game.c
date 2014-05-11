@@ -69,22 +69,6 @@ typedef struct _game {
 //Helper functions
 //I am not sure whether I have these correct
 int getVertex (Game g, path pathToVertex) {
-int placeNum(int row, int col, int height[], int width) {
-    int output;
-    if (col < 0 || col >= width || row > 0 || row >= height[col]) {
-        output = -1;
-    } else {
-        output = row;
-        int i = 0;
-        while (i < col) {
-            output += height[i];
-            i++;
-        }
-    }
-    return output;
-}
-
-int getVertex (Game g, path pathToVertex) {
     char* i = pathToVertex;
     int current_vertex = 0;
     while (*i != 0) {
@@ -120,33 +104,6 @@ int getEdge (Game g, path pathToEdge) {
         i++;
     }
     return current_edge;
-}
-
-void initaliseNeighbours(Game g) {
-    int i, j, k;
-    int regionColHeight[] = {3, 4, 5, 4, 3};
-    int vertexColHeight[] = {7, 9, 11, 11, 9, 8};
-    
-    //Neighbours of regions
-    
-    //Regions
-    
-    //Arcs
-    
-    //Vertices
-    i = 0;
-    while (i < REGION_COLUMNS) {
-        j = 0;
-        while (j < regionColHeight[i]) {
-            k = 0;
-            while (k < NEIGHBOURS_PER_REGION) {
-                g->region_neighbours[i].vertices[k] = placeNum(i * 2 + k % 3, j + k / 3, vertexColHeight, REGION_COLUMNS);
-                k++;
-            }
-            j++;
-        }
-        i++;
-    }
 }
 
 
@@ -193,8 +150,6 @@ Game newGame (int discipline[], int dice[]) {
         i++;
     }
     
-    initialiseNeighbours(g);
-    
     //Do things
     
     return g;
@@ -210,17 +165,17 @@ void disposeGame (Game g) {
 void makeAction(Game g, action a) {
     int turn = getWhoseTurn(g);
     if (a.actionCode == BUILD_CAMPUS) {
-        g->vertex_contents[getVertex(a.destination)] = turn;
+        g->vertex_contents[getVertex(g, a.destination)] = turn;
         g->num_students[turn][STUDENT_BPS]--;
         g->num_students[turn][STUDENT_BQN]--;
         g->num_students[turn][STUDENT_MJ]--;
         g->num_students[turn][STUDENT_MTV]--;
     } else if (a.actionCode == BUILD_GO8) {
-        g->vertex_contents[getVertex(a.destination)] += NUM_UNIS;
+        g->vertex_contents[getVertex(g, a.destination)] += NUM_UNIS;
         g->num_students[turn][STUDENT_MJ] -= 2;
         g->num_students[turn][STUDENT_MMONEY] -= 3;
     } else if (a.actionCode == OBTAIN_ARC) {
-        g->arc_contents[getEdge(a.destination)] = turn;
+        g->arc_contents[getEdge(g, a.destination)] = turn;
         g->num_students[turn][STUDENT_BPS]--;
         g->num_students[turn][STUDENT_BQN]--;
     } else if (a.actionCode == OBTAIN_PUBLICATION) {
@@ -303,7 +258,7 @@ int getWhoseTurn (Game g) {
 }
 
 int getCampus(Game g, path pathToVertex) {
-    return g->vertex_contents[getVertex(pathToVertex)];
+    return g->vertex_contents[getVertex(g, pathToVertex)];
 }
 
 // Protect against being called with NO_ONE
@@ -378,4 +333,3 @@ int getStudents (Game g, int player, int discipline) {
     }
     return val;
 }
-
