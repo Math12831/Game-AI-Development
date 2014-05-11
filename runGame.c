@@ -41,6 +41,7 @@ int main (int argc, char *argv[]) {
     action move = getMove(g);
     while (move.actionCode != PASS){
       assert(isLegalAction(g, move) == TRUE);
+      // Convert START_SPINOFF because makeAction expects an OBTAIN event
       if (move.actionCode == START_SPINOFF) {
         diceValue = rollDice();
         if (diceValue <= 4 || diceValue >= 10) { // Gives probability of 1/3
