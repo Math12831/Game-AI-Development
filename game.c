@@ -161,6 +161,7 @@ void disposeGame (Game g) {
     //Do more things?
 }
 
+// TODO: Increase KPI
 void makeAction(Game g, action a) {
     int turn = getWhoseTurn(g);
     if (a.actionCode == BUILD_CAMPUS) {
@@ -174,11 +175,14 @@ void makeAction(Game g, action a) {
         g->num_students[turn][STUDENT_MJ] -= 2;
         g->num_students[turn][STUDENT_MMONEY] -= 3;
     } else if (a.actionCode == OBTAIN_ARC) {
-        g->arc_contents[getEdge(a.destination)] = getWhoseTurn(g);
+        g->arc_contents[getEdge(a.destination)] = turn;
         g->num_students[turn][STUDENT_BPS]--;
         g->num_students[turn][STUDENT_BQN]--;
-    } else if (a.actionCode == START_SPINOFF) {
-        ;   //Generate publication / IP
+    } else if (a.actionCode == OBTAIN_PUBLICATION) {
+        g->num_students[turn][STUDENT_MJ]--;
+        g->num_students[turn][STUDENT_MTV]--;
+        g->num_students[turn][STUDENT_MMONEY]--;
+    } else if (a.actionCode == OBTAIN_IP_PATENT) {
         g->num_students[turn][STUDENT_MJ]--;
         g->num_students[turn][STUDENT_MTV]--;
         g->num_students[turn][STUDENT_MMONEY]--;
