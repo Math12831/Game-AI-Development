@@ -21,6 +21,9 @@
 #define INITIAL_MTV 1
 #define INITIAL_MMONEY 1
 
+#define REGION_COLUMNS 5
+#define VERTEX_COLUMNS 6
+
 //Stores the neighbours of a region - not all parts may be necessary
 typedef struct _region {
     int region[NEIGHBOURS_PER_REGION];
@@ -68,6 +71,21 @@ typedef struct _game {
 
 //Helper functions
 //I am not sure whether I have these correct
+int placeNum(int row, int col, int height[], int width) {
+    int output;
+    if (col < 0 || col >= width || row > 0 || row >= height[col]) {
+        output = -1;
+    } else {
+        output = row;
+        int i = 0;
+        while (i < col) {
+            output += height[i];
+            i++;
+        }
+    }
+    return output;
+}
+
 int getVertex (Game g, path pathToVertex) {
     char* i = pathToVertex;
     int current_vertex = 0;
@@ -106,6 +124,32 @@ int getEdge (Game g, path pathToEdge) {
     return current_edge;
 }
 
+void initaliseNeighbours(Game g) {
+    int i, j, k;
+    int regionColHeight[] = {3, 4, 5, 4, 3};
+    int vertexColHeight[] = {7, 9, 11, 11, 9, 8};
+    
+    //Neighbours of regions
+    
+    //Regions
+    
+    //Arcs
+    
+    //Vertices
+    i = 0;
+    while (i < REGION_COLUMNS) {
+        j = 0;
+        while (j < regionColHeight[i]) {
+          k = 0;
+            while (k < NEIGHBOURS_PER_REGION) {
+                g->region_neighbours[i].vertices[k] = placeNum(i * 2 + k % 3, j + k / 3, vertexColHeight, REGION_COLUMNS);
+                k++;
+            }
+            j++;
+        }
+        i++;
+    }
+}
 
 //Setters
 Game newGame (int discipline[], int dice[]) {
