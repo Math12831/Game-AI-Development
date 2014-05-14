@@ -127,7 +127,7 @@ int getEdge (Game g, path pathToEdge) {
 void initaliseNeighbours(Game g) {
     int i, j, k;
     int regionColHeight[] = {3, 4, 5, 4, 3};
-    int vertexColHeight[] = {7, 9, 11, 11, 9, 8};
+    int vertexColHeight[] = {7, 9, 11, 11, 9, 7};
     
     //Neighbours of regions
     
