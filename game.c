@@ -8,9 +8,8 @@
 #define NUM_ARCS 72
 
 #define NEIGHBOURS_PER_REGION 6
-#define REGIONS_PER_VERTEX 3
-#define VERTICES_PER_ARC 2
-#define REGIONS_PER_ARC 2
+#define NEIGHBOURS_PER_VERTEX 3
+#define NEIGHBOURS_PER_ARC 2
 
 #define NUM_STUDENT_TYPES 6
 
@@ -22,7 +21,14 @@
 #define INITIAL_MMONEY 1
 
 #define REGION_COLUMNS 5
-#define VERTEX_COLUMNS 6
+#define VERTEX_COLUMNS 16
+
+#define NULL_VERTEX -1
+#define NULL_REGION -1
+#define NULL_ARC -1
+
+#define REGION_START {3, 2, 1, 2, 3}
+#define REGION_HEIGHT {3, 4, 5, 4, 3}
 
 //Stores the neighbours of a region - not all parts may be necessary
 typedef struct _region {
@@ -33,15 +39,15 @@ typedef struct _region {
 
 //Stores the neighbours of an arc - not all parts may be necessary
 typedef struct _arc {
-    int vertices[VERTICES_PER_ARC];
-    int regions[REGIONS_PER_ARC];
+    int vertices[NEIGHBOURS_PER_ARC];
+    int regions[NEIGHBOURS_PER_ARC];
 } arc;
 
 //Stores the neighbours of a vertex - not all parts may be necessary
 typedef struct _vertex {
-    int left_arc, right_arc, down_arc;
-    int left_vertex, right_vertex, down_vertex;
-    int regions[REGIONS_PER_VERTEX];
+    int arcs[NEIGHBOURS_PER_VERTEX];
+    int vertices[NEIGHBOURS_PER_VERTEX];
+    int regions[NEIGHBOURS_PER_VERTEX];
 } vertex;
 
 typedef struct _game {
@@ -71,101 +77,129 @@ typedef struct _game {
 
 //Helper functions
 //I am not sure whether I have these correct
-int placeNum(int row, int col, int height[], int width) {
-    int output;
-    if (col < 0 || col >= width || row > 0 || row >= height[col]) {
-        output = -1;
-    } else {
-        output = row;
-        int i = 0;
-        while (i < col) {
-            output += height[i];
-            i++;
-        }
-    }
-    return output;
-}
+int vertexNum (int row, int column);    //Do this
+int regionNum (int row, int column);    //Do this
 
+//Add 1 - go left
+//Subtract 1 - go right
+//Check this works - for next function as well
 int getVertex (Game g, path pathToVertex) {
     char* i = pathToVertex;
-    int current_vertex = 0;
+    int currentVertex = 0;
+    int direction = 0;
     while (*i != 0) {
         vertex* neighbours = &g->vertex_neighbours[current_vertex];
         if (*i == 'L') {
-            current_vertex = neighbours->left_vertex;
+            direction++;
         } else if (*i == 'R') {
-            current_vertex = neighbours->right_vertex;
-        } else {
-            current_vertex = neighbours->down_vertex;
+            direction--;
         }
+        currentVertex = neighbours->vertices[direction % NEIGHBOURS_PER_VERTEX];
         i++;
     }
-    return current_vertex;
+    return currentVertex;
 }
 
 int getEdge (Game g, path pathToEdge) {
-    char* i = pathToEdge;
-    int current_vertex = 0;
-    int current_edge;
+    char* i = pathToVertex;
+    int currentVertex = 0;
+    int currentEdge;
+    int direction = 0;
     while (*i != 0) {
         vertex* neighbours = &g->vertex_neighbours[current_vertex];
         if (*i == 'L') {
-            current_vertex = neighbours->left_vertex;
-            current_edge = neighbours->left_arc;
+            direction++;
         } else if (*i == 'R') {
-            current_vertex = neighbours->right_vertex;
-            current_edge = neighbours->right_arc;
-        } else {
-            current_vertex = neighbours->down_vertex;
-            current_edge = neighbours->down_arc;
+            direction--;
         }
+        currentVertex = neighbours->vertices[direction % NEIGHBOURS_PER_VERTEX];
+        currentEdge = neighbours->arcs[direction % NEIGHBOURS_PER_VERTEX];
         i++;
     }
-    return current_edge;
+    return currentEdge;
 }
 
-void initaliseNeighbours(Game g) {
-    int i, j, k;
-    int regionColHeight[] = {3, 4, 5, 4, 3};
-    int vertexColHeight[] = {7, 9, 11, 11, 9, 8};
-    
-    //Neighbours of regions
-    i = 0;
-    while (i < REGION_COLUMNS) {
-        j = 0;
-        while (j < regionColHeight[i]) {
+void initaliseRegionNeighbours (Game g) {
+    int row, col;
+    int colStart[] = {3, 2, 1, 2, 3};
+    int colEnd[] = {7, 8, 9, 8, 7};
+    col = 0;
+    while (col < REGION_COLUMNS) {
+        row = colStart[col];
+        while (row <= colEnd[col]) {
             //Regions
-            g->region_neighbours[i].regions[0] = placeNum(i - 1, j);
-            //Check logic!
-            if (i <= REGION_COLUMNS / 2 - 1) {
-                g->region_neighbours[i].regions[1] = placeNum(i - 1, j + 1);
-                g->region_neighbours[i].regions[2] = placeNum(i, j + 1);
-            } else {
-                g->region_neighbours[i].regions[1] = placeNum(i, j + 1);
-                g->region_neighbours[i].regions[2] = placeNum(i + 1, j + 1);
-            }
-            g->region_neighbours[i].regions[3] = placeNum(i + 1, j);
-            //Check logic!
-            if (i <= REGION_COLUMNS / 2 - 1) {
-                g->region_neighbours[i].regions[4] = placeNum(i + 1, j - 1);
-                g->region_neighbours[i].regions[5] = placeNum(i, j - 1);
-            } else {
-                g->region_neighbours[i].regions[4] = placeNum(i, j + 1);
-                g->region_neighbours[i].regions[5] = placeNum(i - 1, j - 1);
-            }
+            g->region_neighbours[i].regions[0] = regionNum(row - 2, col);
+            g->region_neighbours[i].regions[1] = regionNum(row - 1, col + 1);
+            g->region_neighbours[i].regions[2] = regionNum(row + 1, col + 1);
+            g->region_neighbours[i].regions[3] = regionNum(row + 2, col);
+            g->region_neighbours[i].regions[4] = regionNum(row + 1, col - 1);
+            g->region_neighbours[i].regions[5] = regionNum(row - 1, col - 1);
             
             //Arcs
             
             //Vertices
-            k = 0;
-            while (k < NEIGHBOURS_PER_REGION) {
-                g->region_neighbours[i].vertices[k] = placeNum(i * 2 + k % 3, j + k / 3, vertexColHeight, REGION_COLUMNS);
-                k++;
-            }
-            j++;
+            g->region_neighbours[i].vertices[0] = vertexNum(row - 1, col * 3 + 2);
+            g->region_neighbours[i].vertices[1] = vertexNum(row, col * 3 + 3);
+            g->region_neighbours[i].vertices[2] = vertexNum(row + 1,  col * 3 + 2);
+            g->region_neighbours[i].vertices[3] = vertexNum(row + 1,  col * 3 + 1);
+            g->region_neighbours[i].vertices[4] = vertexNum(row,  col);
+            g->region_neighbours[i].vertices[5] = vertexNum(row - 1,  col * 3 + 1);
+            
+            row += 2;
         }
-        i++;
+        col++;
     }
+}
+
+//Finish this
+void initaliseVertexNeighbours (Game g) {
+    int row, col;
+    int colStart[];  //Do this
+    int colEnd[];    //Do this
+    col = 0;
+    while (col < VERTEX_COLUMNS) {
+        row = colStart[col];
+        while (row <= colEnd[col]) {
+            if (col % 2 == 0) {
+                //Regions
+                g->vertex_neighbours[i].vertices[0] = regionNum(row, (col + 1) / 3);
+                g->vertex_neighbours[i].vertices[0] = regionNum(row + 1, (col - 1) / 3);
+                g->vertex_neighbours[i].vertices[0] = regionNum(row - 1, (col - 1) / 3);
+                
+                //Arcs
+            
+                //Vertices
+                g->vertex_neighbours[i].vertices[0] = vertexNum(row, col + 1);
+                g->vertex_neighbours[i].vertices[1] = vertexNum(row + 1, col - 1);
+                g->vertex_neighbours[i].vertices[2] = vertexNum(row - 1, col - 1);
+            } else {
+                //Regions
+                g->vertex_neighbours[i].vertices[0] = regionNum(row, (col + 1) / 3);
+                g->vertex_neighbours[i].vertices[0] = regionNum(row + 1, (col + 1) / 3);
+                g->vertex_neighbours[i].vertices[0] = regionNum(row - 1, (col - 1) / 3);
+                
+                //Arcs
+                
+                //Vertices
+                g->vertex_neighbours[i].vertices[0] = vertexNum(row - 1, col + 1);
+                g->vertex_neighbours[i].vertices[1] = vertexNum(row + 1, col + 1);
+                g->region_neighbours[i].vertices[2] = vertexNum(row, col - 1);
+            }
+            
+            row += 2;
+        }
+        col++;
+    }
+}
+
+//Finish this
+void initaliseArcNeighbours (Game g) {
+}
+
+void initaliseNeighbours(Game g) {
+    initialiseRegionNeighbours(g);
+    initialiseVertexNeighbours(g);
+    initialiseArcNeighbours(g);
 }
 
 void inititaliseContents(Game g, int discipline[], int dice[]) {
