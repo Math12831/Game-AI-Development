@@ -127,26 +127,75 @@ int getEdge (Game g, path pathToEdge) {
 void initaliseNeighbours(Game g) {
     int i, j, k;
     int regionColHeight[] = {3, 4, 5, 4, 3};
-    int vertexColHeight[] = {7, 9, 11, 11, 9, 7};
+    int vertexColHeight[] = {7, 9, 11, 11, 9, 8};
     
     //Neighbours of regions
-    
-    //Regions
-    
-    //Arcs
-    
-    //Vertices
     i = 0;
     while (i < REGION_COLUMNS) {
         j = 0;
         while (j < regionColHeight[i]) {
-          k = 0;
+            //Regions
+            g->region_neighbours[i].regions[0] = placeNum(i - 1, j);
+            //Check logic!
+            if (i <= REGION_COLUMNS / 2 - 1) {
+                g->region_neighbours[i].regions[1] = placeNum(i - 1, j + 1);
+                g->region_neighbours[i].regions[2] = placeNum(i, j + 1);
+            } else {
+                g->region_neighbours[i].regions[1] = placeNum(i, j + 1);
+                g->region_neighbours[i].regions[2] = placeNum(i + 1, j + 1);
+            }
+            g->region_neighbours[i].regions[3] = placeNum(i + 1, j);
+            //Check logic!
+            if (i <= REGION_COLUMNS / 2 - 1) {
+                g->region_neighbours[i].regions[4] = placeNum(i + 1, j - 1);
+                g->region_neighbours[i].regions[5] = placeNum(i, j - 1);
+            } else {
+                g->region_neighbours[i].regions[4] = placeNum(i, j + 1);
+                g->region_neighbours[i].regions[5] = placeNum(i - 1, j - 1);
+            }
+            
+            //Arcs
+            
+            //Vertices
+            k = 0;
             while (k < NEIGHBOURS_PER_REGION) {
                 g->region_neighbours[i].vertices[k] = placeNum(i * 2 + k % 3, j + k / 3, vertexColHeight, REGION_COLUMNS);
                 k++;
             }
             j++;
         }
+        i++;
+    }
+}
+
+void inititaliseContents(Game g, int discipline[], int dice[]) {
+    int i = 0;
+    while (i < NUM_REGIONS) {
+        g->region_discipline[i] = discipline[i];
+        g->region_dice[i] = dice[i];
+        i++;
+    }
+    i = 0;
+    while (i < NUM_ARCS) {
+        g->arc_contents[i] = VACANT_ARC;
+        i++;
+    }
+    i = 0;
+    while (i < NUM_VERTICES) {
+        g->vertex_contents[i] = VACANT_VERTEX;
+        i++;
+    }
+}
+
+void initialiseStudents(Game g) {
+    int i = 0;
+    while (i < NUM_UNIS) {
+        g->num_students[i][STUDENT_THD] = INITIAL_THD;
+        g->num_students[i][STUDENT_BPS] = INITIAL_BPS;
+        g->num_students[i][STUDENT_BQN] = INITIAL_BQN;
+        g->num_students[i][STUDENT_MJ] = INITIAL_MJ;
+        g->num_students[i][STUDENT_MTV] = INITIAL_MTV;
+        g->num_students[i][STUDENT_MMONEY] = INITIAL_MMONEY;
         i++;
     }
 }
@@ -164,35 +213,9 @@ Game newGame (int discipline[], int dice[]) {
     g->most_arcs = NO_ONE;
     g->most_publications = NO_ONE;
     
-    //Initialise the contents of each region/arc/vertex
-    i = 0;
-    while (i < NUM_REGIONS) {
-        g->region_discipline[i] = discipline[i];
-        g->region_dice[i] = dice[i];
-        i++;
-    }
-    i = 0;
-    while (i < NUM_ARCS) {
-        g->arc_contents[i] = VACANT_ARC;
-        i++;
-    }
-    i = 0;
-    while (i < NUM_VERTICES) {
-        g->vertex_contents[i] = VACANT_VERTEX;
-        i++;
-    }
-    
-    //Intitialise number of students to 0 for each player and discipline
-    i = 0;
-    while (i < NUM_UNIS) {
-        g->num_students[i][STUDENT_THD] = INITIAL_THD;
-        g->num_students[i][STUDENT_BPS] = INITIAL_BPS;
-        g->num_students[i][STUDENT_BQN] = INITIAL_BQN;
-        g->num_students[i][STUDENT_MJ] = INITIAL_MJ;
-        g->num_students[i][STUDENT_MTV] = INITIAL_MTV;
-        g->num_students[i][STUDENT_MMONEY] = INITIAL_MMONEY;
-        i++;
-    }
+    initialiseContents(g, discipline, dice);
+    initialiseStudents(g);
+    initialiseNeighbours(g);
     
     //Do things
     
