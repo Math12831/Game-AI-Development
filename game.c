@@ -28,6 +28,12 @@
 #define NULL_REGION -1
 #define NULL_ARC -1
 
+#define KPI_POINTS_FOR_CAMPUS 10
+#define KPI_POINTS_FOR_GO8 10
+#define KPI_POINTS_FOR_ARC 2
+#define KPI_POINTS_FOR_PUBLICATION 10
+#define KPI_POINTS_FOR_IP 10
+
 #define REGION_COL_START {3, 2, 1, 2, 3}
 #define REGION_COL_HEIGHT {3, 4, 5, 4, 3}
 
@@ -118,7 +124,7 @@ void makeAction(Game g, action a) {
     int turn = getWhoseTurn(g);
     if (a.actionCode == BUILD_CAMPUS) {
         g->numCampuses[turn]++;
-        g->numKpiPoints[turn] += 10;
+        g->numKpiPoints[turn] += KPI_POINTS_FOR_CAMPUS;
         g->vertexContents[getVertex(g, a.destination)] = turn;
         g->numStudents[turn][STUDENT_BPS]--;
         g->numStudents[turn][STUDENT_BQN]--;
@@ -126,25 +132,25 @@ void makeAction(Game g, action a) {
         g->numStudents[turn][STUDENT_MTV]--;
     } else if (a.actionCode == BUILD_GO8) {
         g->numGo8s[turn]++;
-        g->numKpiPoints[turn] += 10;
+        g->numKpiPoints[turn] += KPI_POINTS_FOR_GO8;
         g->vertexContents[getVertex(g, a.destination)] += NUM_UNIS;
         g->numStudents[turn][STUDENT_MJ] -= 2;
         g->numStudents[turn][STUDENT_MMONEY] -= 3;
     } else if (a.actionCode == OBTAIN_ARC) {
         g->numArcs[turn]++;
-        g->numKpiPoints[turn] += 2;
+        g->numKpiPoints[turn] += KPI_POINTS_FOR_ARC;
         g->arcContents[getEdge(g, a.destination)] = turn;
         g->numStudents[turn][STUDENT_BPS]--;
         g->numStudents[turn][STUDENT_BQN]--;
     } else if (a.actionCode == OBTAIN_PUBLICATION) {
         g->numPublications[turn]++;
-        g->numKpiPoints[turn] += 10;
+        g->numKpiPoints[turn] += KPI_POINTS_FOR_PUBLICATION;
         g->numStudents[turn][STUDENT_MJ]--;
         g->numStudents[turn][STUDENT_MTV]--;
         g->numStudents[turn][STUDENT_MMONEY]--;
     } else if (a.actionCode == OBTAIN_IP_PATENT) {
         g->numIps[turn]++;
-        g->numKpiPoints[turn] += 10;
+        g->numKpiPoints[turn] += KPI_POINTS_FOR_IP;
         g->numStudents[turn][STUDENT_MJ]--;
         g->numStudents[turn][STUDENT_MTV]--;
         g->numStudents[turn][STUDENT_MMONEY]--;
