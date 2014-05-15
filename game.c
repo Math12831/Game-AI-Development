@@ -32,7 +32,7 @@
 
 //Stores the neighbours of a region - not all parts may be necessary
 typedef struct _region {
-    int region[NEIGHBOURS_PER_REGION];
+    int regions[NEIGHBOURS_PER_REGION];
     int arcs[NEIGHBOURS_PER_REGION];
     int vertices[NEIGHBOURS_PER_REGION];
 } region;
@@ -52,27 +52,27 @@ typedef struct _vertex {
 
 typedef struct _game {
     //Game states
-    int turn, most_publications, most_arcs;
+    int turn, mostPublications, mostArcs;
     
     //Player attributes
-    int num_students[NUM_UNIS][NUM_STUDENT_TYPES];  //This is a 2-D array
-    int num_kpi_points[NUM_UNIS];
-    int num_campuses[NUM_UNIS];
-    int num_go8s[NUM_UNIS];
-    int num_arcs[NUM_UNIS];
-    int num_ips[NUM_UNIS];
-    int num_publications[NUM_UNIS];
+    int numStudents[NUM_UNIS][NUM_STUDENT_TYPES];  //This is a 2-D array
+    int numKpiPoints[NUM_UNIS];
+    int numCampuses[NUM_UNIS];
+    int numGo8s[NUM_UNIS];
+    int numArcs[NUM_UNIS];
+    int numIps[NUM_UNIS];
+    int numPublications[NUM_UNIS];
     
     //Contents
-    int region_discipline[NUM_REGIONS];
-    int region_dice[NUM_REGIONS];
-    int vertex_contents[NUM_VERTICES];
-    int arc_contents[NUM_ARCS];
+    int regionDiscipline[NUM_REGIONS];
+    int regionDice[NUM_REGIONS];
+    int vertexContents[NUM_VERTICES];
+    int arcContents[NUM_ARCS];
     
     //Neighbours
-    region region_neighbours[NUM_REGIONS];  //What are the neighbours of each region?
-    arc arc_neighbours[NUM_ARCS];                                           // arc?
-    vertex vertex_neighbours[NUM_VERTICES];                                 // vertex?
+    region regionNeighbours[NUM_REGIONS];  //What are the neighbours of each region?
+    arc arcNeighbours[NUM_ARCS];                                           // arc?
+    vertex vertexNeighbours[NUM_VERTICES];                                 // vertex?
 } game;
 
 //Helper functions
@@ -88,7 +88,7 @@ int getVertex (Game g, path pathToVertex) {
     int currentVertex = 0;
     int direction = 0;
     while (*i != 0) {
-        vertex* neighbours = &g->vertex_neighbours[current_vertex];
+        vertex* neighbours = &g->vertexNeighbours[currentVertex];
         if (*i == 'L') {
             direction++;
         } else if (*i == 'R') {
@@ -101,12 +101,12 @@ int getVertex (Game g, path pathToVertex) {
 }
 
 int getEdge (Game g, path pathToEdge) {
-    char* i = pathToVertex;
+    char* i = pathToEdge;
     int currentVertex = 0;
     int currentEdge;
     int direction = 0;
     while (*i != 0) {
-        vertex* neighbours = &g->vertex_neighbours[current_vertex];
+        vertex* neighbours = &g->vertexNeighbours[currentVertex];
         if (*i == 'L') {
             direction++;
         } else if (*i == 'R') {
@@ -120,30 +120,32 @@ int getEdge (Game g, path pathToEdge) {
 }
 
 void initaliseRegionNeighbours (Game g) {
-    int row, col;
+    int row, col, currentRegion;
     int colStart[] = {3, 2, 1, 2, 3};
     int colEnd[] = {7, 8, 9, 8, 7};
     col = 0;
     while (col < REGION_COLUMNS) {
         row = colStart[col];
         while (row <= colEnd[col]) {
+            currentRegion = regionNum(row, col);
+            
             //Regions
-            g->region_neighbours[i].regions[0] = regionNum(row - 2, col);
-            g->region_neighbours[i].regions[1] = regionNum(row - 1, col + 1);
-            g->region_neighbours[i].regions[2] = regionNum(row + 1, col + 1);
-            g->region_neighbours[i].regions[3] = regionNum(row + 2, col);
-            g->region_neighbours[i].regions[4] = regionNum(row + 1, col - 1);
-            g->region_neighbours[i].regions[5] = regionNum(row - 1, col - 1);
+            g->regionNeighbours[currentRegion].regions[0] = regionNum(row - 2, col);
+            g->regionNeighbours[currentRegion].regions[1] = regionNum(row - 1, col + 1);
+            g->regionNeighbours[currentRegion].regions[2] = regionNum(row + 1, col + 1);
+            g->regionNeighbours[currentRegion].regions[3] = regionNum(row + 2, col);
+            g->regionNeighbours[currentRegion].regions[4] = regionNum(row + 1, col - 1);
+            g->regionNeighbours[currentRegion].regions[5] = regionNum(row - 1, col - 1);
             
             //Arcs
             
             //Vertices
-            g->region_neighbours[i].vertices[0] = vertexNum(row - 1, col * 3 + 2);
-            g->region_neighbours[i].vertices[1] = vertexNum(row, col * 3 + 3);
-            g->region_neighbours[i].vertices[2] = vertexNum(row + 1,  col * 3 + 2);
-            g->region_neighbours[i].vertices[3] = vertexNum(row + 1,  col * 3 + 1);
-            g->region_neighbours[i].vertices[4] = vertexNum(row,  col);
-            g->region_neighbours[i].vertices[5] = vertexNum(row - 1,  col * 3 + 1);
+            g->regionNeighbours[currentRegion].vertices[0] = vertexNum(row - 1, col * 3 + 2);
+            g->regionNeighbours[currentRegion].vertices[1] = vertexNum(row, col * 3 + 3);
+            g->regionNeighbours[currentRegion].vertices[2] = vertexNum(row + 1,  col * 3 + 2);
+            g->regionNeighbours[currentRegion].vertices[3] = vertexNum(row + 1,  col * 3 + 1);
+            g->regionNeighbours[currentRegion].vertices[4] = vertexNum(row,  col);
+            g->regionNeighbours[currentRegion].vertices[5] = vertexNum(row - 1,  col * 3 + 1);
             
             row += 2;
         }
@@ -153,37 +155,39 @@ void initaliseRegionNeighbours (Game g) {
 
 //Finish this
 void initaliseVertexNeighbours (Game g) {
-    int row, col;
+    int row, col, currentVertex;
     int colStart[];  //Do this
     int colEnd[];    //Do this
     col = 0;
     while (col < VERTEX_COLUMNS) {
         row = colStart[col];
         while (row <= colEnd[col]) {
+            currentVertex = vertexNum(row, col);
+            
             if (col % 2 == 0) {
                 //Regions
-                g->vertex_neighbours[i].vertices[0] = regionNum(row, (col + 1) / 3);
-                g->vertex_neighbours[i].vertices[0] = regionNum(row + 1, (col - 1) / 3);
-                g->vertex_neighbours[i].vertices[0] = regionNum(row - 1, (col - 1) / 3);
+                g->vertexNeighbours[currentVertex].vertices[0] = regionNum(row, (col + 1) / 3);
+                g->vertexNeighbours[currentVertex].vertices[1] = regionNum(row + 1, (col - 1) / 3);
+                g->vertexNeighbours[currentVertex].vertices[2] = regionNum(row - 1, (col - 1) / 3);
                 
                 //Arcs
-            
+                
                 //Vertices
-                g->vertex_neighbours[i].vertices[0] = vertexNum(row, col + 1);
-                g->vertex_neighbours[i].vertices[1] = vertexNum(row + 1, col - 1);
-                g->vertex_neighbours[i].vertices[2] = vertexNum(row - 1, col - 1);
+                g->vertexNeighbours[currentVertex].vertices[0] = vertexNum(row, col + 1);
+                g->vertexNeighbours[currentVertex].vertices[1] = vertexNum(row + 1, col - 1);
+                g->vertexNeighbours[currentVertex].vertices[2] = vertexNum(row - 1, col - 1);
             } else {
                 //Regions
-                g->vertex_neighbours[i].vertices[0] = regionNum(row, (col + 1) / 3);
-                g->vertex_neighbours[i].vertices[0] = regionNum(row + 1, (col + 1) / 3);
-                g->vertex_neighbours[i].vertices[0] = regionNum(row - 1, (col - 1) / 3);
+                g->vertexNeighbours[currentVertex].vertices[0] = regionNum(row, (col + 1) / 3);
+                g->vertexNeighbours[currentVertex].vertices[1] = regionNum(row + 1, (col + 1) / 3);
+                g->vertexNeighbours[currentVertex].vertices[2] = regionNum(row - 1, (col - 1) / 3);
                 
                 //Arcs
                 
                 //Vertices
-                g->vertex_neighbours[i].vertices[0] = vertexNum(row - 1, col + 1);
-                g->vertex_neighbours[i].vertices[1] = vertexNum(row + 1, col + 1);
-                g->region_neighbours[i].vertices[2] = vertexNum(row, col - 1);
+                g->vertexNeighbours[currentVertex].vertices[0] = vertexNum(row - 1, col + 1);
+                g->vertexNeighbours[currentVertex].vertices[1] = vertexNum(row + 1, col + 1);
+                g->regionNeighbours[currentVertex].vertices[2] = vertexNum(row, col - 1);
             }
             
             row += 2;
@@ -196,7 +200,7 @@ void initaliseVertexNeighbours (Game g) {
 void initaliseArcNeighbours (Game g) {
 }
 
-void initaliseNeighbours(Game g) {
+void initaliseNeighbours (Game g) {
     initialiseRegionNeighbours(g);
     initialiseVertexNeighbours(g);
     initialiseArcNeighbours(g);
@@ -205,18 +209,18 @@ void initaliseNeighbours(Game g) {
 void inititaliseContents(Game g, int discipline[], int dice[]) {
     int i = 0;
     while (i < NUM_REGIONS) {
-        g->region_discipline[i] = discipline[i];
-        g->region_dice[i] = dice[i];
+        g->regionDiscipline[i] = discipline[i];
+        g->regionDice[i] = dice[i];
         i++;
     }
     i = 0;
     while (i < NUM_ARCS) {
-        g->arc_contents[i] = VACANT_ARC;
+        g->arcContents[i] = VACANT_ARC;
         i++;
     }
     i = 0;
     while (i < NUM_VERTICES) {
-        g->vertex_contents[i] = VACANT_VERTEX;
+        g->vertexContents[i] = VACANT_VERTEX;
         i++;
     }
 }
@@ -224,28 +228,25 @@ void inititaliseContents(Game g, int discipline[], int dice[]) {
 void initialiseStudents(Game g) {
     int i = 0;
     while (i < NUM_UNIS) {
-        g->num_students[i][STUDENT_THD] = INITIAL_THD;
-        g->num_students[i][STUDENT_BPS] = INITIAL_BPS;
-        g->num_students[i][STUDENT_BQN] = INITIAL_BQN;
-        g->num_students[i][STUDENT_MJ] = INITIAL_MJ;
-        g->num_students[i][STUDENT_MTV] = INITIAL_MTV;
-        g->num_students[i][STUDENT_MMONEY] = INITIAL_MMONEY;
+        g->numStudents[i][STUDENT_THD] = INITIAL_THD;
+        g->numStudents[i][STUDENT_BPS] = INITIAL_BPS;
+        g->numStudents[i][STUDENT_BQN] = INITIAL_BQN;
+        g->numStudents[i][STUDENT_MJ] = INITIAL_MJ;
+        g->numStudents[i][STUDENT_MTV] = INITIAL_MTV;
+        g->numStudents[i][STUDENT_MMONEY] = INITIAL_MMONEY;
         i++;
     }
 }
 
 //Setters
 Game newGame (int discipline[], int dice[]) {
-    //Declare variables
-    int i;
-    
     //Allocate game
     Game g = malloc(sizeof(game));
     
     //Initialise variables
     g->turn = -1;
-    g->most_arcs = NO_ONE;
-    g->most_publications = NO_ONE;
+    g->mostArcs = NO_ONE;
+    g->mostPublications = NO_ONE;
     
     initialiseContents(g, discipline, dice);
     initialiseStudents(g);
@@ -266,27 +267,37 @@ void disposeGame (Game g) {
 void makeAction(Game g, action a) {
     int turn = getWhoseTurn(g);
     if (a.actionCode == BUILD_CAMPUS) {
-        g->vertex_contents[getVertex(g, a.destination)] = turn;
-        g->num_students[turn][STUDENT_BPS]--;
-        g->num_students[turn][STUDENT_BQN]--;
-        g->num_students[turn][STUDENT_MJ]--;
-        g->num_students[turn][STUDENT_MTV]--;
+        g->numCampuses[turn]++;
+        g->numKpiPoints[turn] += 10;
+        g->vertexContents[getVertex(g, a.destination)] = turn;
+        g->numStudents[turn][STUDENT_BPS]--;
+        g->numStudents[turn][STUDENT_BQN]--;
+        g->numStudents[turn][STUDENT_MJ]--;
+        g->numStudents[turn][STUDENT_MTV]--;
     } else if (a.actionCode == BUILD_GO8) {
-        g->vertex_contents[getVertex(g, a.destination)] += NUM_UNIS;
-        g->num_students[turn][STUDENT_MJ] -= 2;
-        g->num_students[turn][STUDENT_MMONEY] -= 3;
+        g->numGo8s[turn]++;
+        g->numKpiPoints[turn] += 10;
+        g->vertexContents[getVertex(g, a.destination)] += NUM_UNIS;
+        g->numStudents[turn][STUDENT_MJ] -= 2;
+        g->numStudents[turn][STUDENT_MMONEY] -= 3;
     } else if (a.actionCode == OBTAIN_ARC) {
-        g->arc_contents[getEdge(g, a.destination)] = turn;
-        g->num_students[turn][STUDENT_BPS]--;
-        g->num_students[turn][STUDENT_BQN]--;
+        g->numArcs[turn]++;
+        g->numKpiPoints[turn] += 2;
+        g->arcContents[getEdge(g, a.destination)] = turn;
+        g->numStudents[turn][STUDENT_BPS]--;
+        g->numStudents[turn][STUDENT_BQN]--;
     } else if (a.actionCode == OBTAIN_PUBLICATION) {
-        g->num_students[turn][STUDENT_MJ]--;
-        g->num_students[turn][STUDENT_MTV]--;
-        g->num_students[turn][STUDENT_MMONEY]--;
+        g->numPublications[turn]++;
+        g->numKpiPoints[turn] += 10;
+        g->numStudents[turn][STUDENT_MJ]--;
+        g->numStudents[turn][STUDENT_MTV]--;
+        g->numStudents[turn][STUDENT_MMONEY]--;
     } else if (a.actionCode == OBTAIN_IP_PATENT) {
-        g->num_students[turn][STUDENT_MJ]--;
-        g->num_students[turn][STUDENT_MTV]--;
-        g->num_students[turn][STUDENT_MMONEY]--;
+        g->numIps[turn]++;
+        g->numKpiPoints[turn] += 10;
+        g->numStudents[turn][STUDENT_MJ]--;
+        g->numStudents[turn][STUDENT_MTV]--;
+        g->numStudents[turn][STUDENT_MMONEY]--;
     }
 }
 
@@ -300,14 +311,14 @@ void throwDice (Game g, int diceScore) {
     i = 0;
     while (i < NUM_REGIONS) {
         //If this region's number has been rolled
-        if (g->region_dice[i] == diceScore) {
+        if (g->regionDice[i] == diceScore) {
             j = 0;
             while (j < NEIGHBOURS_PER_REGION) {
                 //If this vertex contains a campus
-                int v_contents = g->vertex_contents[g->region_neighbours[i].vertices[j]];
+                int v_contents = g->vertexContents[g->regionNeighbours[i].vertices[j]];
                 if (v_contents != VACANT_VERTEX) {
                     //Increase the number of students at that university
-                    g->num_students[(v_contents % NUM_UNIS) - 1][i]++;
+                    g->numStudents[(v_contents % NUM_UNIS) - 1][i]++;
                 }
                 j++;
             }
@@ -319,9 +330,9 @@ void throwDice (Game g, int diceScore) {
     if (diceScore == 7) {
         i = 1;
         while (i <= NUM_UNIS) {
-            g->num_students[i][STUDENT_THD] += g->num_students[i][STUDENT_MTV] + g->num_students[i][STUDENT_BQN];
-            g->num_students[i][STUDENT_BQN] = 0;
-            g->num_students[i][STUDENT_MTV] = 0;
+            g->numStudents[i][STUDENT_THD] += g->numStudents[i][STUDENT_MTV] + g->numStudents[i][STUDENT_BQN];
+            g->numStudents[i][STUDENT_BQN] = 0;
+            g->numStudents[i][STUDENT_MTV] = 0;
             i++;
         }
     }
@@ -329,11 +340,11 @@ void throwDice (Game g, int diceScore) {
 
 //Getters
 int getDiscipline (Game g, int regionID) {
-    return g->region_discipline[regionID];
+    return g->regionDiscipline[regionID];
 }
 
 int getDiceValue (Game g, int regionID) {
-    return g->region_dice[regionID];
+    return g->regionDice[regionID];
 }
 
 int getTurnNumber (Game g) {
@@ -341,11 +352,11 @@ int getTurnNumber (Game g) {
 }
 
 int getMostARCs (Game g) {
-    return g->most_arcs;
+    return g->mostArcs;
 }
 
 int getMostPublications (Game g) {
-    return g->most_publications;
+    return g->mostPublications;
 }
 
 int getWhoseTurn (Game g) {
@@ -359,7 +370,7 @@ int getWhoseTurn (Game g) {
 }
 
 int getCampus(Game g, path pathToVertex) {
-    return g->vertex_contents[getVertex(g, pathToVertex)];
+    return g->vertexContents[getVertex(g, pathToVertex)];
 }
 
 // Protect against being called with NO_ONE
@@ -369,7 +380,7 @@ int getKPIpoints (Game g, int player) {
     if (player == NO_ONE) {
         val = 0;
     } else {
-        val = g->num_kpi_points[player - 1];
+        val = g->numKpiPoints[player - 1];
     }
     return val;
 }
@@ -379,7 +390,7 @@ int getARCs (Game g, int player) {
     if (player == NO_ONE) {
         val = 0;
     } else {
-        val = g->num_arcs[player - 1];
+        val = g->numArcs[player - 1];
     }
     return val;
 }
@@ -390,7 +401,7 @@ int getGO8s (Game g, int player) {
     if (player == NO_ONE) {
         val = 0;
     } else {
-        val = g->num_go8s[player - 1];
+        val = g->numGo8s[player - 1];
     }
     return val;
 }
@@ -400,7 +411,7 @@ int getCampuses (Game g, int player) {
     if (player == NO_ONE) {
         val = 0;
     } else {
-        val = g->num_campuses[player - 1];
+        val = g->numCampuses[player - 1];
     }
     return val;
 }
@@ -410,7 +421,7 @@ int getIPs (Game g, int player) {
     if (player == NO_ONE) {
         val = 0;
     } else {
-        val = g->num_ips[player - 1];
+        val = g->numIps[player - 1];
     }
     return val;
 }
@@ -420,7 +431,7 @@ int getPublications (Game g, int player) {
     if (player == NO_ONE) {
         val = 0;
     } else {
-        val = g->num_publications[player - 1];
+        val = g->numPublications[player - 1];
     }
     return val;
 }
@@ -430,7 +441,7 @@ int getStudents (Game g, int player, int discipline) {
     if (player == NO_ONE) {
         val = 0;
     } else {
-        val = g->num_students[player - 1][discipline]; //This is how you get an element in a 2-D array
+        val = g->numStudents[player - 1][discipline]; //This is how you get an element in a 2-D array
     }
     return val;
 }
