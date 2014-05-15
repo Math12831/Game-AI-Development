@@ -1,5 +1,5 @@
 //CHECK OFF-BY-ONE ERRORS!
-//CHECK OFF-BY-ONE ERRORS!
+//Remove "magic numbers"
 
 #include <stdlib.h>
 
@@ -28,8 +28,8 @@
 #define NULL_REGION -1
 #define NULL_ARC -1
 
-#define REGION_START {3, 2, 1, 2, 3}
-#define REGION_HEIGHT {3, 4, 5, 4, 3}
+#define REGION_COL_START {3, 2, 1, 2, 3}
+#define REGION_COL_HEIGHT {3, 4, 5, 4, 3}
 
 //Stores the neighbours of a region - not all parts may be necessary
 typedef struct _region {
@@ -86,7 +86,7 @@ void initaliseNeighbours (Game g);
 void inititaliseContents(Game g, int discipline[], int dice[]);
 void initialiseStudents(Game g);
 int vertexNum (int row, int column);    //Do this
-int regionNum (int row, int column);    //Do this
+int regionNum (int row, int column);
 
 //Setters
 Game newGame (int discipline[], int dice[]) {
@@ -338,6 +338,12 @@ int getEdge (Game g, path pathToEdge) {
     return currentEdge;
 }
 
+void initaliseNeighbours (Game g) {
+    initialiseRegionNeighbours(g);
+    initialiseVertexNeighbours(g);
+    initialiseArcNeighbours(g);
+}
+
 void initaliseRegionNeighbours (Game g) {
     int row, col, currentRegion;
     int colStart[] = {3, 2, 1, 2, 3};
@@ -419,12 +425,6 @@ void initaliseVertexNeighbours (Game g) {
 void initaliseArcNeighbours (Game g) {
 }
 
-void initaliseNeighbours (Game g) {
-    initialiseRegionNeighbours(g);
-    initialiseVertexNeighbours(g);
-    initialiseArcNeighbours(g);
-}
-
 void inititaliseContents(Game g, int discipline[], int dice[]) {
     int i = 0;
     while (i < NUM_REGIONS) {
@@ -455,4 +455,20 @@ void initialiseStudents(Game g) {
         g->numStudents[i][STUDENT_MMONEY] = INITIAL_MMONEY;
         i++;
     }
+}
+
+int regionNum (int row, int col) {
+    int colStart = REGION_COL_START;
+    int colHeight = REGION_COL_HEIGHT;
+    int output;
+    if (col < 0 || col >= REGION_COLUMNS || row < colStart[col] || row % 2 != colStart[col] % 2 || row > colStart[col] + colHeight[col] * 2) {
+        output = -1;
+    } else {
+        output = (row - colStart[col]) / 2;
+        while (col > 0) {
+            output += colHeight[col - 1];
+            col--;
+        }
+    }
+    return output;
 }
