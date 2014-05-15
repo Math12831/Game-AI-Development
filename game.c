@@ -1,4 +1,5 @@
 //CHECK OFF-BY-ONE ERRORS!
+//CHECK OFF-BY-ONE ERRORS!
 
 #include <stdlib.h>
 
@@ -75,168 +76,17 @@ typedef struct _game {
     vertex vertexNeighbours[NUM_VERTICES];                                 // vertex?
 } game;
 
-//Helper functions
-//I am not sure whether I have these correct
+//Helper function declarations
+int getVertex (Game g, path pathToVertex);
+int getEdge (Game g, path pathToEdge);
+void initaliseRegionNeighbours (Game g);
+void initaliseVertexNeighbours (Game g);
+void initaliseArcNeighbours (Game g);
+void initaliseNeighbours (Game g);
+void inititaliseContents(Game g, int discipline[], int dice[]);
+void initialiseStudents(Game g);
 int vertexNum (int row, int column);    //Do this
 int regionNum (int row, int column);    //Do this
-
-//Add 1 - go left
-//Subtract 1 - go right
-//Check this works - for next function as well
-int getVertex (Game g, path pathToVertex) {
-    char* i = pathToVertex;
-    int currentVertex = 0;
-    int direction = 0;
-    while (*i != 0) {
-        vertex* neighbours = &g->vertexNeighbours[currentVertex];
-        if (*i == 'L') {
-            direction++;
-        } else if (*i == 'R') {
-            direction--;
-        }
-        currentVertex = neighbours->vertices[direction % NEIGHBOURS_PER_VERTEX];
-        i++;
-    }
-    return currentVertex;
-}
-
-int getEdge (Game g, path pathToEdge) {
-    char* i = pathToEdge;
-    int currentVertex = 0;
-    int currentEdge;
-    int direction = 0;
-    while (*i != 0) {
-        vertex* neighbours = &g->vertexNeighbours[currentVertex];
-        if (*i == 'L') {
-            direction++;
-        } else if (*i == 'R') {
-            direction--;
-        }
-        currentVertex = neighbours->vertices[direction % NEIGHBOURS_PER_VERTEX];
-        currentEdge = neighbours->arcs[direction % NEIGHBOURS_PER_VERTEX];
-        i++;
-    }
-    return currentEdge;
-}
-
-void initaliseRegionNeighbours (Game g) {
-    int row, col, currentRegion;
-    int colStart[] = {3, 2, 1, 2, 3};
-    int colEnd[] = {7, 8, 9, 8, 7};
-    col = 0;
-    while (col < REGION_COLUMNS) {
-        row = colStart[col];
-        while (row <= colEnd[col]) {
-            currentRegion = regionNum(row, col);
-            
-            //Regions
-            g->regionNeighbours[currentRegion].regions[0] = regionNum(row - 2, col);
-            g->regionNeighbours[currentRegion].regions[1] = regionNum(row - 1, col + 1);
-            g->regionNeighbours[currentRegion].regions[2] = regionNum(row + 1, col + 1);
-            g->regionNeighbours[currentRegion].regions[3] = regionNum(row + 2, col);
-            g->regionNeighbours[currentRegion].regions[4] = regionNum(row + 1, col - 1);
-            g->regionNeighbours[currentRegion].regions[5] = regionNum(row - 1, col - 1);
-            
-            //Arcs
-            
-            //Vertices
-            g->regionNeighbours[currentRegion].vertices[0] = vertexNum(row - 1, col * 3 + 2);
-            g->regionNeighbours[currentRegion].vertices[1] = vertexNum(row, col * 3 + 3);
-            g->regionNeighbours[currentRegion].vertices[2] = vertexNum(row + 1,  col * 3 + 2);
-            g->regionNeighbours[currentRegion].vertices[3] = vertexNum(row + 1,  col * 3 + 1);
-            g->regionNeighbours[currentRegion].vertices[4] = vertexNum(row,  col);
-            g->regionNeighbours[currentRegion].vertices[5] = vertexNum(row - 1,  col * 3 + 1);
-            
-            row += 2;
-        }
-        col++;
-    }
-}
-
-//Finish this
-void initaliseVertexNeighbours (Game g) {
-    int row, col, currentVertex;
-    int colStart[];  //Do this
-    int colEnd[];    //Do this
-    col = 0;
-    while (col < VERTEX_COLUMNS) {
-        row = colStart[col];
-        while (row <= colEnd[col]) {
-            currentVertex = vertexNum(row, col);
-            
-            if (col % 2 == 0) {
-                //Regions
-                g->vertexNeighbours[currentVertex].vertices[0] = regionNum(row, (col + 1) / 3);
-                g->vertexNeighbours[currentVertex].vertices[1] = regionNum(row + 1, (col - 1) / 3);
-                g->vertexNeighbours[currentVertex].vertices[2] = regionNum(row - 1, (col - 1) / 3);
-                
-                //Arcs
-                
-                //Vertices
-                g->vertexNeighbours[currentVertex].vertices[0] = vertexNum(row, col + 1);
-                g->vertexNeighbours[currentVertex].vertices[1] = vertexNum(row + 1, col - 1);
-                g->vertexNeighbours[currentVertex].vertices[2] = vertexNum(row - 1, col - 1);
-            } else {
-                //Regions
-                g->vertexNeighbours[currentVertex].vertices[0] = regionNum(row, (col + 1) / 3);
-                g->vertexNeighbours[currentVertex].vertices[1] = regionNum(row + 1, (col + 1) / 3);
-                g->vertexNeighbours[currentVertex].vertices[2] = regionNum(row - 1, (col - 1) / 3);
-                
-                //Arcs
-                
-                //Vertices
-                g->vertexNeighbours[currentVertex].vertices[0] = vertexNum(row - 1, col + 1);
-                g->vertexNeighbours[currentVertex].vertices[1] = vertexNum(row + 1, col + 1);
-                g->regionNeighbours[currentVertex].vertices[2] = vertexNum(row, col - 1);
-            }
-            
-            row += 2;
-        }
-        col++;
-    }
-}
-
-//Finish this
-void initaliseArcNeighbours (Game g) {
-}
-
-void initaliseNeighbours (Game g) {
-    initialiseRegionNeighbours(g);
-    initialiseVertexNeighbours(g);
-    initialiseArcNeighbours(g);
-}
-
-void inititaliseContents(Game g, int discipline[], int dice[]) {
-    int i = 0;
-    while (i < NUM_REGIONS) {
-        g->regionDiscipline[i] = discipline[i];
-        g->regionDice[i] = dice[i];
-        i++;
-    }
-    i = 0;
-    while (i < NUM_ARCS) {
-        g->arcContents[i] = VACANT_ARC;
-        i++;
-    }
-    i = 0;
-    while (i < NUM_VERTICES) {
-        g->vertexContents[i] = VACANT_VERTEX;
-        i++;
-    }
-}
-
-void initialiseStudents(Game g) {
-    int i = 0;
-    while (i < NUM_UNIS) {
-        g->numStudents[i][STUDENT_THD] = INITIAL_THD;
-        g->numStudents[i][STUDENT_BPS] = INITIAL_BPS;
-        g->numStudents[i][STUDENT_BQN] = INITIAL_BQN;
-        g->numStudents[i][STUDENT_MJ] = INITIAL_MJ;
-        g->numStudents[i][STUDENT_MTV] = INITIAL_MTV;
-        g->numStudents[i][STUDENT_MMONEY] = INITIAL_MMONEY;
-        i++;
-    }
-}
 
 //Setters
 Game newGame (int discipline[], int dice[]) {
@@ -444,4 +294,165 @@ int getStudents (Game g, int player, int discipline) {
         val = g->numStudents[player - 1][discipline]; //This is how you get an element in a 2-D array
     }
     return val;
+}
+
+//Helper functions
+//I am not sure whether I have these correct
+
+//Add 1 - go left
+//Subtract 1 - go right
+//Check this works - for next function as well
+int getVertex (Game g, path pathToVertex) {
+    char* i = pathToVertex;
+    int currentVertex = 0;
+    int direction = 0;
+    while (*i != 0) {
+        vertex* neighbours = &g->vertexNeighbours[currentVertex];
+        if (*i == 'L') {
+            direction++;
+        } else if (*i == 'R') {
+            direction--;
+        }
+        currentVertex = neighbours->vertices[direction % NEIGHBOURS_PER_VERTEX];
+        i++;
+    }
+    return currentVertex;
+}
+
+int getEdge (Game g, path pathToEdge) {
+    char* i = pathToEdge;
+    int currentVertex = 0;
+    int currentEdge;
+    int direction = 0;
+    while (*i != 0) {
+        vertex* neighbours = &g->vertexNeighbours[currentVertex];
+        if (*i == 'L') {
+            direction++;
+        } else if (*i == 'R') {
+            direction--;
+        }
+        currentVertex = neighbours->vertices[direction % NEIGHBOURS_PER_VERTEX];
+        currentEdge = neighbours->arcs[direction % NEIGHBOURS_PER_VERTEX];
+        i++;
+    }
+    return currentEdge;
+}
+
+void initaliseRegionNeighbours (Game g) {
+    int row, col, currentRegion;
+    int colStart[] = {3, 2, 1, 2, 3};
+    int colEnd[] = {7, 8, 9, 8, 7};
+    col = 0;
+    while (col < REGION_COLUMNS) {
+        row = colStart[col];
+        while (row <= colEnd[col]) {
+            currentRegion = regionNum(row, col);
+            
+            //Regions
+            g->regionNeighbours[currentRegion].regions[0] = regionNum(row - 2, col);
+            g->regionNeighbours[currentRegion].regions[1] = regionNum(row - 1, col + 1);
+            g->regionNeighbours[currentRegion].regions[2] = regionNum(row + 1, col + 1);
+            g->regionNeighbours[currentRegion].regions[3] = regionNum(row + 2, col);
+            g->regionNeighbours[currentRegion].regions[4] = regionNum(row + 1, col - 1);
+            g->regionNeighbours[currentRegion].regions[5] = regionNum(row - 1, col - 1);
+            
+            //Arcs
+            
+            //Vertices
+            g->regionNeighbours[currentRegion].vertices[0] = vertexNum(row - 1, col * 3 + 2);
+            g->regionNeighbours[currentRegion].vertices[1] = vertexNum(row, col * 3 + 3);
+            g->regionNeighbours[currentRegion].vertices[2] = vertexNum(row + 1,  col * 3 + 2);
+            g->regionNeighbours[currentRegion].vertices[3] = vertexNum(row + 1,  col * 3 + 1);
+            g->regionNeighbours[currentRegion].vertices[4] = vertexNum(row,  col);
+            g->regionNeighbours[currentRegion].vertices[5] = vertexNum(row - 1,  col * 3 + 1);
+            
+            row += 2;
+        }
+        col++;
+    }
+}
+
+//Finish this
+void initaliseVertexNeighbours (Game g) {
+    int row, col, currentVertex;
+    int colStart[];  //Do this
+    int colEnd[];    //Do this
+    col = 0;
+    while (col < VERTEX_COLUMNS) {
+        row = colStart[col];
+        while (row <= colEnd[col]) {
+            currentVertex = vertexNum(row, col);
+            
+            if (col % 2 == 0) {
+                //Regions
+                g->vertexNeighbours[currentVertex].vertices[0] = regionNum(row, (col + 1) / 3);
+                g->vertexNeighbours[currentVertex].vertices[1] = regionNum(row + 1, (col - 1) / 3);
+                g->vertexNeighbours[currentVertex].vertices[2] = regionNum(row - 1, (col - 1) / 3);
+                
+                //Arcs
+                
+                //Vertices
+                g->vertexNeighbours[currentVertex].vertices[0] = vertexNum(row, col + 1);
+                g->vertexNeighbours[currentVertex].vertices[1] = vertexNum(row + 1, col - 1);
+                g->vertexNeighbours[currentVertex].vertices[2] = vertexNum(row - 1, col - 1);
+            } else {
+                //Regions
+                g->vertexNeighbours[currentVertex].vertices[0] = regionNum(row, (col + 1) / 3);
+                g->vertexNeighbours[currentVertex].vertices[1] = regionNum(row + 1, (col + 1) / 3);
+                g->vertexNeighbours[currentVertex].vertices[2] = regionNum(row - 1, (col - 1) / 3);
+                
+                //Arcs
+                
+                //Vertices
+                g->vertexNeighbours[currentVertex].vertices[0] = vertexNum(row - 1, col + 1);
+                g->vertexNeighbours[currentVertex].vertices[1] = vertexNum(row + 1, col + 1);
+                g->regionNeighbours[currentVertex].vertices[2] = vertexNum(row, col - 1);
+            }
+            
+            row += 2;
+        }
+        col++;
+    }
+}
+
+//Finish this
+void initaliseArcNeighbours (Game g) {
+}
+
+void initaliseNeighbours (Game g) {
+    initialiseRegionNeighbours(g);
+    initialiseVertexNeighbours(g);
+    initialiseArcNeighbours(g);
+}
+
+void inititaliseContents(Game g, int discipline[], int dice[]) {
+    int i = 0;
+    while (i < NUM_REGIONS) {
+        g->regionDiscipline[i] = discipline[i];
+        g->regionDice[i] = dice[i];
+        i++;
+    }
+    i = 0;
+    while (i < NUM_ARCS) {
+        g->arcContents[i] = VACANT_ARC;
+        i++;
+    }
+    i = 0;
+    while (i < NUM_VERTICES) {
+        g->vertexContents[i] = VACANT_VERTEX;
+        i++;
+    }
+}
+
+void initialiseStudents(Game g) {
+    int i = 0;
+    while (i < NUM_UNIS) {
+        g->numStudents[i][STUDENT_THD] = INITIAL_THD;
+        g->numStudents[i][STUDENT_BPS] = INITIAL_BPS;
+        g->numStudents[i][STUDENT_BQN] = INITIAL_BQN;
+        g->numStudents[i][STUDENT_MJ] = INITIAL_MJ;
+        g->numStudents[i][STUDENT_MTV] = INITIAL_MTV;
+        g->numStudents[i][STUDENT_MMONEY] = INITIAL_MMONEY;
+        i++;
+    }
 }
