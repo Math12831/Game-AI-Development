@@ -47,11 +47,42 @@ void initGrid (Container c);
 void initColumn (Container c, int column,
                  int start, int num, int side,
                  int joinSide, int joinEnd);
+void testGrid (Container c);
 
 int main (int argc, char *argv[]) {
    Container c = malloc(sizeof(container));
    initGrid(c);
+   testGrid(c);
    return EXIT_SUCCESS;
+}
+
+void testGrid (Container c) {
+   int i = 0;
+   while (i < NUM_COLUMN) {
+      int j = 0;
+      while (j < NUM_ROW) {
+         
+         point *currentPoint = &(c->gameGrid[i][j]);
+         
+         if (currentPoint->valid == TRUE) {
+            printf("Point at gameGrid[%d][%d] has coordinates (%d,%d), has neighbours at", i, j, currentPoint->column, currentPoint->row);           
+            if (currentPoint->up != NULL) {
+               printf(" (%d,%d)", currentPoint->up->column, currentPoint->up->row);
+            }
+            if (currentPoint->down != NULL) {
+               printf(" (%d,%d)", currentPoint->down->column, currentPoint->down->row);
+            }
+            if (currentPoint->side != NULL) {
+               printf(" (%d,%d)", currentPoint->side->column, currentPoint->side->row);
+            }
+            printf("\n");
+         }
+         
+         j++;
+      }
+      
+      i++;
+   }   
 }
 
 void initGrid (Container c) {
@@ -80,9 +111,6 @@ void initGrid (Container c) {
       
       joinEnd = (halfColumn + 1) % 2;
       
-   /* printf("column: %d,\thalfColumn: %d,\tnum: %d,\tstart: %d,\tside: %d,\tjoinSide: %d,\tjoinEnd: %d\n",
-             column, halfColumn, num, start, side, joinSide, joinEnd); */
-      
       initColumn(c, column, start, num, side, joinSide, joinEnd);    
       
       i++;
@@ -92,5 +120,68 @@ void initGrid (Container c) {
 void initColumn (Container c, int column,
                  int start, int num, int side,
                  int joinSide, int joinEnd) {
-   
+   int i = 0;
+   while (i < NUM_ROW) {
+      int currentRow = i;
+      point *currentPoint = &(c->gameGrid[column][currentRow]);
+      
+      currentPoint->column = column;
+      currentPoint->row = currentRow;
+      currentPoint->connectSide = side;
+      
+      if ((currentRow >= start) && (currentRow <= start + ((num - 1) * 2)) &&
+            ((currentRow - start) % 2 == 0)) {
+         
+         currentPoint->valid = TRUE;
+                  
+         if (joinSide == TRUE) {
+         
+            if (side == RIGHT) {
+               currentPoint->side = &(c->gameGrid[column + 1][currentRow]);
+            } else {
+               currentPoint->side = &(c->gameGrid[column - 1][currentRow]);
+            }
+                     
+         } else {
+            currentPoint->side = NULL;
+         }
+         
+         if (joinEnd == TRUE || ((currentRow != start) &&
+               (currentRow != start + ((num - 1) * 2)))) {
+         
+            if (side == RIGHT) {
+               currentPoint->up   = &(c->gameGrid[column - 1][currentRow + 1]);
+               currentPoint->down = &(c->gameGrid[column - 1][currentRow - 1]);
+            } else {
+               currentPoint->up   = &(c->gameGrid[column + 1][currentRow + 1]);
+               currentPoint->down = &(c->gameGrid[column + 1][currentRow - 1]);
+            }
+            
+         } else if (currentRow == start) {
+            if (side == RIGHT) {
+               currentPoint->up   = NULL;
+               currentPoint->down = &(c->gameGrid[column - 1][currentRow - 1]);
+            } else {
+               currentPoint->up   = NULL;
+               currentPoint->down = &(c->gameGrid[column + 1][currentRow - 1]);
+            }
+         } else {
+            if (side == RIGHT) {
+               currentPoint->up   = &(c->gameGrid[column - 1][currentRow + 1]);
+               currentPoint->down = NULL;
+            } else {
+               currentPoint->up   = &(c->gameGrid[column + 1][currentRow + 1]);
+               currentPoint->down = NULL;
+            }
+         }
+         
+      } else {         
+         currentPoint->valid = FALSE;
+         currentPoint->up = NULL;
+         currentPoint->down = NULL;
+         currentPoint->side = NULL;
+      }     
+
+      i++; 
+   }
 }
