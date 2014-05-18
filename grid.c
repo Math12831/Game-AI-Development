@@ -1,12 +1,13 @@
 /*
  * grid.c
  * Author: James Arcus, james.arcus64@gmail.com
- * Bugs found, do not use yet.
+ * 
  *
  */
 
 #include <stdlib.h>
 #include <stdio.h>
+#include "Game.h"
 
 #define LEFT   0
 #define RIGHT  1
@@ -33,10 +34,13 @@ typedef struct _point {
    struct _point *down;
    struct _point *side;
    
+   // Data about point goes here
+   
 } point;
 
 typedef point grid[NUM_COLUMN][NUM_ROW];
 
+// Simulates game struct usage
 typedef struct _container {
    grid gameGrid;
 } container;
@@ -49,6 +53,8 @@ void initColumn (Container c, int column,
                  int joinSide, int joinEnd);
 void testGrid (Container c);
 
+
+// Sample main function that tests the grid system
 int main (int argc, char *argv[]) {
    Container c = malloc(sizeof(container));
    initGrid(c);
@@ -65,7 +71,8 @@ void testGrid (Container c) {
          point *currentPoint = &(c->gameGrid[i][j]);
          
          if (currentPoint->valid == TRUE) {
-            printf("Point at gameGrid[%d][%d] has coordinates (%d,%d), has neighbours at", i, j, currentPoint->column, currentPoint->row);           
+            printf("Point at gameGrid[%d][%d] has coordinates (%d,%d), has neighbours at",
+                   i, j, currentPoint->column, currentPoint->row);           
             if (currentPoint->up != NULL) {
                printf(" up: (%d,%d)", currentPoint->up->column, currentPoint->up->row);
             } else {
