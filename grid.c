@@ -5,9 +5,11 @@
  *
  */
 
-#define BACK   0
-#define LEFT   1
-#define RIGHT  2
+#include <stdlib.h>
+#include <stdio.h>
+
+#define LEFT   0
+#define RIGHT  1
 
 #define STRAIGHT_LEFT   0
 #define STRAIGHT_RIGHT  1
@@ -48,5 +50,47 @@ void initColumn (Container c, int column,
 
 int main (int argc, char *argv[]) {
    Container c = malloc(sizeof(container));
+   initGrid(c);
    return EXIT_SUCCESS;
+}
+
+void initGrid (Container c) {
+   int i = 0;
+   while (i < NUM_COLUMN) {
+      int column = i;
+      int halfColumn;
+      int start, num, side, joinSide, joinEnd;
+      
+      if (column >= (NUM_COLUMN / 2)) {
+         halfColumn = (NUM_COLUMN - 1) - column;
+      } else {
+         halfColumn = column;
+      }
+      
+      num = ((halfColumn + 1) / 2) + 3;
+      start = 6 - num;
+      
+      side = column % 2;
+      
+      if (halfColumn == 0) {
+         joinSide = FALSE;
+      } else {
+         joinSide = TRUE;
+      }
+      
+      joinEnd = (halfColumn + 1) % 2;
+      
+   /* printf("column: %d,\thalfColumn: %d,\tnum: %d,\tstart: %d,\tside: %d,\tjoinSide: %d,\tjoinEnd: %d\n",
+             column, halfColumn, num, start, side, joinSide, joinEnd); */
+      
+      initColumn(c, column, start, num, side, joinSide, joinEnd);    
+      
+      i++;
+   }
+}
+
+void initColumn (Container c, int column,
+                 int start, int num, int side,
+                 int joinSide, int joinEnd) {
+   
 }
