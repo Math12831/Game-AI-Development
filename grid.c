@@ -12,15 +12,15 @@
 #define LEFT   0
 #define RIGHT  1
 
-#define STRAIGHT_LEFT   0
-#define STRAIGHT_RIGHT  1
-#define UP_LEFT         2
-#define UP_RIGHT        3
-#define DOWN_LEFT       4
-#define DOWN_RIGHT      5
+#define IMPOSSIBLE_DIRECTION -1
 
-#define FALSE  0
-#define TRUE   1
+#define STRAIGHT_LEFT   0
+#define UP_RIGHT        1
+#define DOWN_RIGHT      2
+
+#define STRAIGHT_RIGHT  3
+#define UP_LEFT         4
+#define DOWN_LEFT       5
 
 #define NUM_COLUMN   12
 #define NUM_ROW      11
@@ -52,7 +52,7 @@ void initColumn (Container c, int column,
                  int start, int num, int side,
                  int joinSide, int joinEnd);
 void testGrid (Container c);
-
+point *traversePath(path p);
 
 // Sample main function that tests the grid system
 int main (int argc, char *argv[]) {
@@ -198,3 +198,61 @@ void initColumn (Container c, int column,
       i++; 
    }
 }
+
+point *traversePath(Container c, path p) {
+   char *i = p;
+   point *prev = NULL;
+   point *current = &(c->gameGrid[5][0]);
+   while (*i != 0) {
+      int direction = computeDirection(prev, current);
+      
+      if (*i == 'L') {
+      
+      } else if (*i == 'R') {
+      
+      } else {
+      
+      }
+      
+      i++;
+   }
+}
+
+// Computes direction of travel from 
+int computeDirection(point *from, point *to) {
+   if (from == NULL) {
+      from = to;
+   }
+   
+   int verticalDisp = to->column - from->column;
+   int horizontalDisp = to->row - from->row;
+   int direction;
+   
+   if (abs(verticalDisp) > 1 || abs(horizontalDisp) > 1) {
+      direction = IMPOSSIBLE_DIRECTION;
+   } else if (verticalDisp == 0 && horizontalDisp == 0) {
+      direction = DOWN_RIGHT; // Default direction to face inward from start
+   } else if (verticalDisp == 1) {
+   
+   } else if (verticalDisp == -1) {
+   
+   } else { // verticalDisp == 0
+      if (horizontalDisp == 1) {
+         direction = RIGHT;
+      } else { // horizontalDisp == -1
+         direction = LEFT;
+      }
+   }
+{
+
+
+
+
+
+
+
+
+
+
+
+
