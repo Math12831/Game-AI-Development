@@ -1,7 +1,7 @@
 /*
  * grid.c
- *
- *
+ * Author: James Arcus, james.arcus64@gmail.com
+ * Bugs found, do not use yet.
  *
  */
 
