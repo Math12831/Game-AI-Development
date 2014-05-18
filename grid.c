@@ -67,13 +67,19 @@ void testGrid (Container c) {
          if (currentPoint->valid == TRUE) {
             printf("Point at gameGrid[%d][%d] has coordinates (%d,%d), has neighbours at", i, j, currentPoint->column, currentPoint->row);           
             if (currentPoint->up != NULL) {
-               printf(" (%d,%d)", currentPoint->up->column, currentPoint->up->row);
+               printf(" up: (%d,%d)", currentPoint->up->column, currentPoint->up->row);
+            } else {
+               printf(" up:  NULL");
             }
             if (currentPoint->down != NULL) {
-               printf(" (%d,%d)", currentPoint->down->column, currentPoint->down->row);
+               printf(" down: (%d,%d)", currentPoint->down->column, currentPoint->down->row);
+            } else {
+               printf(" down:  NULL");
             }
             if (currentPoint->side != NULL) {
-               printf(" (%d,%d)", currentPoint->side->column, currentPoint->side->row);
+               printf(" side: (%d,%d)", currentPoint->side->column, currentPoint->side->row);
+            } else {
+               printf(" side:  NULL");
             }
             printf("\n");
          }
@@ -150,27 +156,27 @@ void initColumn (Container c, int column,
                (currentRow != start + ((num - 1) * 2)))) {
          
             if (side == RIGHT) {
-               currentPoint->up   = &(c->gameGrid[column - 1][currentRow + 1]);
-               currentPoint->down = &(c->gameGrid[column - 1][currentRow - 1]);
+               currentPoint->up   = &(c->gameGrid[column - 1][currentRow - 1]);
+               currentPoint->down = &(c->gameGrid[column - 1][currentRow + 1]);
             } else {
-               currentPoint->up   = &(c->gameGrid[column + 1][currentRow + 1]);
-               currentPoint->down = &(c->gameGrid[column + 1][currentRow - 1]);
+               currentPoint->up   = &(c->gameGrid[column + 1][currentRow - 1]);
+               currentPoint->down = &(c->gameGrid[column + 1][currentRow + 1]);
             }
             
          } else if (currentRow == start) {
             if (side == RIGHT) {
                currentPoint->up   = NULL;
-               currentPoint->down = &(c->gameGrid[column - 1][currentRow - 1]);
+               currentPoint->down = &(c->gameGrid[column - 1][currentRow + 1]);
             } else {
                currentPoint->up   = NULL;
-               currentPoint->down = &(c->gameGrid[column + 1][currentRow - 1]);
+               currentPoint->down = &(c->gameGrid[column + 1][currentRow + 1]);
             }
          } else {
             if (side == RIGHT) {
-               currentPoint->up   = &(c->gameGrid[column - 1][currentRow + 1]);
+               currentPoint->up   = &(c->gameGrid[column - 1][currentRow - 1]);
                currentPoint->down = NULL;
             } else {
-               currentPoint->up   = &(c->gameGrid[column + 1][currentRow + 1]);
+               currentPoint->up   = &(c->gameGrid[column + 1][currentRow - 1]);
                currentPoint->down = NULL;
             }
          }
