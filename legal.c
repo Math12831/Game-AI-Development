@@ -21,18 +21,19 @@ int isLegalAction (Game g, action a);
 
 int isLegalAction (Game g, action a) {
     int tally = 0;
-    if (getWhoseTurn (Game g) != NO_ONE) {
+    int valid = TRUE;
+    if (getWhoseTurn (g) != NO_ONE) {
         if (a.actionCode == BUILD_CAMPUS) {
             if (validatePath (g, a.destination) == FALSE && checkResources (g, a.actionCode) == FALSE) {
                 tally ++;
             }
-            if (checkNeighbours (g, a.destination) != NOBODY && getCampus (g, a.destination) != VACANT_VERTEX) {
+            if (checkNoNeighbours(g, a.destination) != NOBODY && getCampus (g, a.destination) != VACANT_VERTEX) {
                 tally ++;
             }
             if (getARC (g, a.destination) != getWhoseTurn (g)) {
                 tally ++;
             }
-        } else if (a.actionCode == BUILD_G08) {
+        } else if (a.actionCode == BUILD_GO8) {
             if (validatePath (g, a.destination) == FALSE && checkResources (g, a.actionCode) == FALSE) {
                 tally ++;
             }
