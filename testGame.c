@@ -1,5 +1,5 @@
 /*
-/*
+ *
  *  testGame.c
  *
  *  Created by Nicholas Pizzino on 30/04/14.
@@ -127,9 +127,9 @@ void testBasics() {
     // 16. Does Player X have Y upgraded G08 campuses, where X and Y are given integral variables.
     assert (getWhoseTurn(g) == NO_ONE);
     assert (getMostARCs(g) == NO_ONE);
-    assert (getCampuses(g, UNI_A) == 0);
-    assert (getCampuses(g, UNI_B) == 0);
-    assert (getCampuses(g, UNI_C) == 0);
+    assert (getCampuses(g, UNI_A) == 2);
+    assert (getCampuses(g, UNI_B) == 2);
+    assert (getCampuses(g, UNI_C) == 2);
     assert (getGO8s(g, UNI_A) == 0);
     assert (getGO8s(g, UNI_B) == 0);
     assert (getGO8s(g, UNI_C) == 0);
@@ -270,9 +270,9 @@ void testBasics() {
     assert (getARCs(g, UNI_C) == 1);
     
     // Third Move
-    assert (getCampuses(g, UNI_A) == 0);
-    assert (getCampuses(g, UNI_B) == 0);
-    assert (getCampuses(g, UNI_C) == 0);
+    assert (getCampuses(g, UNI_A) == 2);
+    assert (getCampuses(g, UNI_B) == 2);
+    assert (getCampuses(g, UNI_C) == 2);
     
     throwDice(g, 2);
     strcpy(path, "LR");
@@ -285,7 +285,7 @@ void testBasics() {
     assert (getARC(g, path) == ARC_A);
     assert (getCampus(g, path) == VACANT_VERTEX);
     assert (getMostARCs(g) == UNI_A);
-    assert (getCampuses(g, UNI_A) == 1);
+    assert (getCampuses(g, UNI_A) == 3);
     assert (getKPIpoints(g, UNI_A) == 24);
     
     throwDice(g, 2);
@@ -304,7 +304,7 @@ void testBasics() {
     assert (getCampus(g, path) == VACANT_VERTEX);
     strcpy(path, "LR");
     assert (getARC(g, path) == ARC_A);
-    assert (getCampuses(g, UNI_B) == 1);
+    assert (getCampuses(g, UNI_B) == 3);
     assert (getKPIpoints(g, UNI_B) == 24);
     
     throwDice(g, 2);
@@ -321,7 +321,7 @@ void testBasics() {
     assert (getARC(g, path) == ARC_A);
     strcpy(path, "RRL");
     assert (getARC(g, path) == ARC_B);
-    assert (getCampuses(g, UNI_C) == 1);
+    assert (getCampuses(g, UNI_C) == 3);
     assert (getKPIpoints(g, UNI_C) == 24);
     
     assert (getARCs(g, UNI_A) == 2);
@@ -392,4 +392,7 @@ void testBasics() {
     strcpy(a.destination, path);
     assert (isLegalAction(g, a) == FALSE);
     
+    assert (getCampuses(g, UNI_A) == 4);
+    assert (getCampuses(g, UNI_B) == 4);
+    assert (getCampuses(g, UNI_C) == 4);
 }
