@@ -5,6 +5,8 @@
 
 #include "Game.h"
 
+#define STARTING_VERTEX 0
+
 #define NUM_VERTICES 54
 #define NUM_ARCS 72
 
@@ -316,7 +318,7 @@ int getStudents (Game g, int player, int discipline) {
 //Check this works - for next function as well
 int getVertex (Game g, path pathToVertex) {
     char* i = pathToVertex;
-    int currentVertex = 0;  //Fix this
+    int currentVertex = STARTING_VERTEX;  //Fix this
     int direction = 0;
     while (*i != 0) {
         vertex* neighbours = &g->vertexNeighbours[currentVertex];
@@ -341,7 +343,7 @@ int getVertex (Game g, path pathToVertex) {
 
 int getEdge (Game g, path pathToEdge) {
     char* i = pathToEdge;
-    int currentVertex = 0;
+    int currentVertex = STARTING_VERTEX;
     int currentEdge;
     int direction = 0;
     while (*i != 0) {
