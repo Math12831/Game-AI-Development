@@ -55,6 +55,7 @@ typedef struct _vertex {
     int arcs[NEIGHBOURS_PER_VERTEX];
     int vertices[NEIGHBOURS_PER_VERTEX];
     int regions[NEIGHBOURS_PER_VERTEX];
+    int handedness;
 } vertex;
 
 typedef struct _game {
@@ -315,14 +316,22 @@ int getStudents (Game g, int player, int discipline) {
 //Check this works - for next function as well
 int getVertex (Game g, path pathToVertex) {
     char* i = pathToVertex;
-    int currentVertex = 0;
+    int currentVertex = 0;  //Fix this
     int direction = 0;
     while (*i != 0) {
         vertex* neighbours = &g->vertexNeighbours[currentVertex];
-        if (*i == 'L') {
-            direction++;
-        } else if (*i == 'R') {
-            direction--;
+        if (g->VertexNeighbours[currentVertex].handedness) {
+            if (*i == 'B') {
+                direction--;
+            } else if (*i == 'R') {
+                direction++;
+            }
+        } else {
+            if (*i == 'B') {
+                direction++;
+            } else if (*i == 'L') {
+                direction--;
+            }
         }
         currentVertex = neighbours->vertices[direction % NEIGHBOURS_PER_VERTEX];
         i++;
@@ -337,10 +346,18 @@ int getEdge (Game g, path pathToEdge) {
     int direction = 0;
     while (*i != 0) {
         vertex* neighbours = &g->vertexNeighbours[currentVertex];
-        if (*i == 'L') {
-            direction++;
-        } else if (*i == 'R') {
-            direction--;
+        if (g->VertexNeighbours[currentVertex].handedness) {
+            if (*i == 'B') {
+                direction--;
+            } else if (*i == 'R') {
+                direction++;
+            }
+        } else {
+            if (*i == 'B') {
+                direction++;
+            } else if (*i == 'L') {
+                direction--;
+            }
         }
         currentVertex = neighbours->vertices[direction % NEIGHBOURS_PER_VERTEX];
         currentEdge = neighbours->arcs[direction % NEIGHBOURS_PER_VERTEX];
