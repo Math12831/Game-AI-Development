@@ -233,9 +233,17 @@ int computeDirection(point *from, point *to) {
    } else if (verticalDisp == 0 && horizontalDisp == 0) {
       direction = DOWN_RIGHT; // Default direction to face inward from start
    } else if (verticalDisp == 1) {
-   
+      if (horizontalDisp == 1) {
+         direction = DOWN_RIGHT;
+      } else { // horizontalDisp == -1
+         direction = DOWN_LEFT;
+      }
    } else if (verticalDisp == -1) {
-   
+      if (horizontalDisp == 1) {
+         direction = UP_RIGHT;
+      } else { // horizontalDisp == -1
+         direction = UP_LEFT;
+      }
    } else { // verticalDisp == 0
       if (horizontalDisp == 1) {
          direction = RIGHT;
@@ -243,7 +251,9 @@ int computeDirection(point *from, point *to) {
          direction = LEFT;
       }
    }
-{
+   
+   return direction;
+}
 
 
 
