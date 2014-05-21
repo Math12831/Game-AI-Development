@@ -141,12 +141,18 @@ void makeAction(Game g, action a) {
         g->arcContents[getEdge(g, a.destination)] = turn;
         g->numStudents[turn][STUDENT_BPS]--;
         g->numStudents[turn][STUDENT_BQN]--;
+        if (mostArcs == NO_ONE || numArcs[turn] > numArcs[mostArcs]) {
+            mostArcs = turn;
+        }
     } else if (a.actionCode == OBTAIN_PUBLICATION) {
         g->numPublications[turn]++;
         g->numKpiPoints[turn] += KPI_POINTS_FOR_PUBLICATION;
         g->numStudents[turn][STUDENT_MJ]--;
         g->numStudents[turn][STUDENT_MTV]--;
         g->numStudents[turn][STUDENT_MMONEY]--;
+        if (mostPublications == NO_ONE || numPublications[turn] > numPublications[numPublications]) {
+            mostPublications = turn;
+        }
     } else if (a.actionCode == OBTAIN_IP_PATENT) {
         g->numIps[turn]++;
         g->numKpiPoints[turn] += KPI_POINTS_FOR_IP;
