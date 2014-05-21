@@ -119,7 +119,6 @@ void disposeGame (Game g) {
     //Do more things?
 }
 
-// TODO: Increase KPI
 void makeAction(Game g, action a) {
     int turn = getWhoseTurn(g);
     if (a.actionCode == BUILD_CAMPUS) {
@@ -184,8 +183,8 @@ void throwDice (Game g, int diceScore) {
     
     //Change students
     if (diceScore == 7) {
-        i = 1;
-        while (i <= NUM_UNIS) {
+        i = UNI_A;
+        while (i <= UNI_C) {
             g->numStudents[i][STUDENT_THD] += g->numStudents[i][STUDENT_MTV] + g->numStudents[i][STUDENT_BQN];
             g->numStudents[i][STUDENT_BQN] = 0;
             g->numStudents[i][STUDENT_MTV] = 0;
