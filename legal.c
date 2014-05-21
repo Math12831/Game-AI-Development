@@ -16,7 +16,7 @@
 int validatePath (Game g, path pathToVertex);
 int checkResources (Game g, int actionCode, action a);
 int checkNoNeighbours (Game g, path pathToVertex);
-int checkDisciplineNumbers (Game g);
+//int checkDisciplineNumbers (Game g);
 
 int isLegalAction (Game g, action a) {
     int tally = 0;
@@ -79,55 +79,55 @@ int isLegalAction (Game g, action a) {
 int checkResources (Game g, int actionCode, action a) {
     int player = getWhoseTurn (g);
     int resources = FALSE;
-    int i = 0;
+    int tally = 0;
     
     if (actionCode == BUILD_CAMPUS) {
         if (getStudents (g, player, STUDENT_BPS) == 0) {
-            i ++;
+            tally ++;
         }
         if (getStudents (g, player, STUDENT_BQN) == 0) {
-            i ++;
+            tally ++;
         }
         if (getStudents (g, player, STUDENT_MJ) == 0) {
-            i ++;
+            tally ++;
         }
         if (getStudents (g, player, STUDENT_MTV) == 0) {
-            i ++;
+            tally ++;
         } 
     } else if (actionCode == BUILD_GO8) {
         if (getStudents (g, player, STUDENT_MJ) <= 1) {
-            i ++;
+            tally ++;
         }
         if (getStudents (g, player, STUDENT_MMONEY) <= 2) {
-            i ++;
+            tally ++;
         }
     } else if (actionCode == OBTAIN_ARC) {
         if (getStudents (g, player, STUDENT_BPS) == 0) {
-            i ++;
+            tally ++;
         }
         if (getStudents (g, player, STUDENT_BQN) == 0) {
-            i ++;
+            tally ++;
         }
     } else if (actionCode == START_SPINOFF) {
         if (getStudents (g, player, STUDENT_MJ) == 0) {
-            i ++;
+            tally ++;
         }
         if (getStudents (g, player, STUDENT_MTV) == 0) {
-            i ++;
+            tally ++;
         }
         if (getStudents (g, player, STUDENT_MMONEY) == 0) {
-            i ++;
+            tally ++;
         }
     } else if (actionCode == RETRAIN_STUDENTS) {
         int exchangeRate = getExchangeRate (g, getWhoseTurn (g), a.disciplineFrom, a.disciplineTo);
         int disciplineFrom = a.disciplineFrom;
         
         if (getStudents (g, player, disciplineFrom) !<= (exchangeRate - 1)) {
-            i ++;
+            tally ++;
         }
     }
     
-    if (i == 0) {
+    if (tally == 0) {
         resources = TRUE;
     }
     
