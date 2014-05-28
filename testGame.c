@@ -133,7 +133,7 @@ void testBasics() {
     assert (getGO8s(g, UNI_A) == 0);
     assert (getGO8s(g, UNI_B) == 0);
     assert (getGO8s(g, UNI_C) == 0);
-    assert (getTurnNumber(g) == NO_ONE);
+    assert (getTurnNumber(g) == -1);
     assert (getStudents(g, UNI_A, STUDENT_BPS) == 3);
     assert (getStudents(g, UNI_A, STUDENT_BQN) == 3);
     assert (getStudents(g, UNI_A, STUDENT_MTV) == 1);
